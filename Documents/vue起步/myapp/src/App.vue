@@ -6,13 +6,34 @@
       <li><router-link to="/search">搜索</router-link></li>
       一级路由出口
     </ul>-->
-    <router-view />
-    <!-- 播放器 -->
-    <!-- <audio src="" controls style="height:36px"></audio> -->
+    <!-- <keep-alive> -->
+      <router-view @tran-song-id="getCurrentSongUrl($event)"></router-view>
+    <!-- </keep-alive> -->
 
+    <!-- 播放器 -->
+    <BaseMusicPlayer :songUrl="currentSongUrl" :songInfo="currentSongInfo"></BaseMusicPlayer>
   </div>
 </template>
-
+<script>
+export default {
+  data() {
+    return {
+      currentSongInfo:'',
+      currentSongUrl: ""
+    };
+  },
+  methods: {
+    getCurrentSongUrl(params) {
+      this.currentSongInfo = params;
+      this.currentSongUrl = `https://music.163.com/song/media/outer/url?id=${params.id}.mp3`
+      console.log(this.currentSongUrl);
+    }
+  },
+  created() {
+    console.log(this.currentSongId);
+  }
+};
+</script>
 <style lang="less">
 #app {
   // font-family: Avenir, Helvetica, Arial, sans-serif;

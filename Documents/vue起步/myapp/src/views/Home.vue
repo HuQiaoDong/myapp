@@ -14,12 +14,12 @@
     </div>
     <div class="newsong">
       <CardTitle class="card-title">最新音乐</CardTitle>
-      <ul class="list">
-        <li v-for="(song,index) in newsongs" :key="index" class="song-item">
-          <span class="song-name">{{song.name}}</span>
-          <span class="desc">{{song.song.alias[0]}}</span>
-        </li>
-      </ul>
+      <NewSongItem
+        v-for="(item,index) in newsongs"
+        :key="index"
+        :item="item"
+        @click.native="sendSongId(item)"
+      ></NewSongItem>
     </div>
     <!-- .
     推荐音乐-->
@@ -31,18 +31,20 @@
 // import HelloWorld from "@/components/HelloWorld.vue";
 import CardTitle from "@/components/CardTitle.vue";
 import SongListCard from "@/components/SongListCard";
+import NewSongItem from "@/components/NewSongItem";
 export default {
   name: "Home",
   data() {
     return {
       personalized: [],
-      newsongs: []
+      newsongs: [],
     };
   },
   components: {
     // HelloWorld
     CardTitle,
-    SongListCard
+    SongListCard,
+    NewSongItem
   },
   methods: {
     getPersonalized: function() {
@@ -65,6 +67,19 @@ export default {
         .catch(error => {
           console.log(error);
         });
+    },
+    sendSongId(item) {
+      console.log(item.id);
+      this.$emit("tran-song-id", item);
+      // for (let i in this.isPlay) {
+      //   this.isPlay[i] = false;
+      // }
+      // this.isPlay["fa"] = true;
+      // this.isPlay["fa-volume-up"] = true;
+      // console.log(this.$el.div);
+      
+      // console.log(this.isPlay);
+      
     },
     getNewSong() {
       this.axios
@@ -104,6 +119,7 @@ export default {
       // return newArr;
     }
   },
+
   created() {
     this.getNewSong();
     // this.getPersonalized();
@@ -121,7 +137,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.personlized-list {
+.personlized .personlized-list {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -140,24 +156,9 @@ export default {
   line-height: 18px;
   margin-bottom: 15px;
 }
-.home {
-  .newsong {
-    .list {
-      padding-left: 10px;
-      .song-item {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        width: 360px;
-        span.song-name{
-          font-size: 17px;
-        }
-        span.desc {
-          margin-left: 5px;
-          color: #888888;
-        }
-      }
-    }
+.newsong {
+  .card-title {
+    margin-bottom: 15px;
   }
 }
 </style>

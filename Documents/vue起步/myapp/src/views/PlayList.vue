@@ -19,10 +19,12 @@
       </div>
     </header>
     <div class="info">
-      <div class="tags">
+      <div class="tags" v-if="tags">
         <label>标签：</label>
         <span v-for="(tag,index) in tags" :key="index">{{tag}}</span>
       </div>
+      <div :class="descClass">简介：{{songListDetail.description}}</div>
+      <i class="fa fa-angle-down drop-down" @click="ctlDescHidden()"></i>
     </div>
 
     <!-- playlistID:{{$route.query.id}} -->
@@ -36,8 +38,13 @@ export default {
     return {
       songListId: this.$route.query.id,
       playCount: this.$route.query.playcount,
-      songListDetail: ""
+      songListDetail: "",
       // tags:this.songListDetail.tags,
+      // isHidden: true,
+      descClass: {
+        hidden: true,
+        description: true
+      }
     };
   },
   methods: {
@@ -50,6 +57,7 @@ export default {
         })
         .then(response => {
           this.songListDetail = response.data.playlist;
+          this.tags = response.data.playlist.tags;
           window.localStorage.setItem(
             "sl-" + this.$route.query.id,
             JSON.stringify({
@@ -62,43 +70,91 @@ export default {
         .catch(function(error) {
           console.log(error);
         });
+    },
+    ctlDescHidden() {
+      this.descClass.hidden = !this.descClass.hidden;
+      // console.log(this.descClass.hidden);
     }
   },
-  created() {
-    // this.getSongListDetail();
+  // created() {
+  //   // this.getSongListDetail();
+  //   const cacheSongListDetail = JSON.parse(
+  //     window.localStorage.getItem(`sl-${this.$route.query.id}`)
+  //   );
+  //   if (cacheSongListDetail && cacheSongListDetail.expire > Date.now()) {
+  //     console.log("从缓存取出数据");
+
+  //     this.songListDetail = cacheSongListDetail.result;
+  //     console.log(this.songListDetail.tags);
+  //     this.tags = this.songListDetail.tags;
+  //   } else {
+  //     console.log("ajax获取新数据");
+
+  //     this.getSongListDetail();
+  //   }
+  // },
+  //   组件被创建之后的路由更新
+  // beforeRouteUpdate(to, from, next) {
+  //   console.log(to, from);
+  //   from;
+  //   this.songListId = to.query.id;
+  //   this.playCount = to.query.playcount;
+  //   next();
+  // },
+  beforeRouteEnter(to, from, next) {
     const cacheSongListDetail = JSON.parse(
-      window.localStorage.getItem(`sl-${this.$route.query.id}`)
+      window.localStorage.getItem(`sl-${to.query.id}`)
     );
     if (cacheSongListDetail && cacheSongListDetail.expire > Date.now()) {
       console.log("从缓存取出数据");
-
-      this.songListDetail = cacheSongListDetail.result;
-      console.log(this.songListDetail.tags);
-      this.tags = this.songListDetail.tags;
+      let songListDetail = cacheSongListDetail.result;
+      // this.songListDetail =
+      // console.log(this.songListDetail.tags);
+      let tags = songListDetail.tags;
+      // console.log(sld, ts);
+      next(vm => {
+        vm.songListId = to.query.id;
+        vm.songListDetail = songListDetail;
+        vm.tags = tags;
+        // console.log(vm.descClass);
+      });
     } else {
-      console.log("ajax获取新数据");
+      window.axios
+        .get("/playlist/detail", {
+          params: {
+            id: to.query.id
+          }
+        })
+        .then(response => {
+          console.log(response);
 
-      this.getSongListDetail();
+          let playlist = response.data.playlist;
+          let tags = response.data.playlist.tags;
+          next(vm => {
+            vm.songListId = to.query.id;
+            vm.songListDetail = playlist;
+            vm.tags = tags;
+            // console.log(vm.descClass);
+          });
+          window.localStorage.setItem(
+            "sl-" + to.query.id,
+            JSON.stringify({
+              expire: Date.now() * 3 * 60 * 60 * 1000,
+              result: response.data.playlist
+            })
+          );
+          // console.log(this.songListDetail);
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
     }
-    // console.log(cacheSongListDetail);
-    // console.log(this.songListDetail);
-    // console.log(this.songListDetail.coverImgUrl);
-  },
-  //   组件被创建之后的路由更新
-  beforeRouteUpdate(to, from, next) {
-    console.log(to, from);
-    from;
-    this.songListId = to.query.id;
-    this.playCount = to.query.playcount;
-    next();
   }
 };
 </script>
 
 <style lang="less" scoped>
 .playlist {
-  width: 420px;
-  height: 200px;
   .header {
     display: flex;
     width: 100%;
@@ -172,9 +228,11 @@ export default {
     }
   }
   .info {
-    color:#686868;
+    // position: relative;
+    color: #686868;
     padding: 10px 15px;
     .tags {
+      padding-bottom: 10px;
       span {
         display: inline-block;
         margin-right: 10px;
@@ -184,6 +242,22 @@ export default {
         border-radius: 10px;
         color: #6f6f6f;
       }
+    }
+    .description {
+      font-size: 14px;
+      color: #666666;
+    }
+    .hidden {
+      // height: 4em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+    }
+    .drop-down {
+      float: right;
+      font-size: 20px;
     }
   }
 }

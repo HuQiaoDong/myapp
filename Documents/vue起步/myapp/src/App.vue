@@ -53,7 +53,7 @@ export default {
 }
 
 #nav {
-  margin: 30px 0px 30px 0px;
+  margin: 10px 0px 30px 0px;
   padding-bottom: 10px;
   display: flex;
   border-bottom: 1px solid #eeeeee;

@@ -8,7 +8,7 @@
         <img src="../../assets/disc-ip6.png" alt class="border" />
       </div>
       <header>
-        <i class="fa fa-arrow-left" aria-hidden="true" @click="closeWindow"></i>
+        <i class="fa fa-arrow-left" aria-hidden="true" @click="closeWindow()"></i>
         <div class="song-info">
           <h3>{{currentSong.song.name}}</h3>
           <p>{{currentSong.song.artists[0].name}}</p>
@@ -35,11 +35,11 @@ export default {
       //   show:this.show,
     };
   },
-  props: ["currentSong"],
+  props: ["currentSong","show"],
   methods: {
     closeWindow() {
-      // this.show = !this.show;
-      // this.$emit('trans-window-status',this.show)
+      this.show = !this.show;
+      this.$emit('close',this.show);
       // this.close = !close;
       document.body.style.overflow = "";
     }

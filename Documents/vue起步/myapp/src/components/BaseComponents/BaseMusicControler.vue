@@ -17,8 +17,8 @@
       <CurrentPlayList v-if="showPlayList"></CurrentPlayList>
     </transition>
 
-    <transition name="custom-classes-transition" enter-active-class="animated fadeInUp">
-      <BaseMusicPlayer v-if="show" :currentSong="songInfo"></BaseMusicPlayer>
+    <transition name="custom-classes-transition" enter-active-class="animated fadeInUp" leave-active-class="animated fadeOutDown">
+      <BaseMusicPlayer v-if="show" :currentSong="songInfo" :show = "show" @close="closeWindow($event)"></BaseMusicPlayer>
     </transition>
   </div>
 </template>
@@ -55,6 +55,9 @@ export default {
         ? this.$el.querySelector("audio").play()
         : this.$el.querySelector("audio").pause();
     },
+    closeWindow(event){
+      this.show = event;
+    },
     drawProgress() {
       let audio = this.$el.querySelector("audio");
       /** @type HTMLAudioElement */
@@ -90,8 +93,8 @@ export default {
         //绘制圆形进度条
         context.beginPath();
         context.strokeStyle = "#FF0000";
-        context.lineWidth = 1;
-        context.arc(12.5, 12.5, 12.5, 0, currentProgress * Math.PI);
+        context.lineWidth = 1.5;
+        context.arc(12.5, 12.5, 12, 0, currentProgress * Math.PI);
         context.stroke();
         context.closePath();
       };
@@ -169,8 +172,8 @@ export default {
       position: absolute;
       top: 1px;
       left: -8px;
-      border: 1.5px solid #888888;
-      box-sizing: border-box;
+      border: 1.5px solid #aaaaaa;
+      // box-sizing: border-box;
       border-radius: 50%;
     }
     // .fa-play{
@@ -181,7 +184,7 @@ export default {
       &:nth-child(2) {
         padding: 4px 0px 0px 1.5px;
         font-size: 5px;
-        color: #666666;
+        color: #444444;
       }
       &:nth-child(3) {
         font-size: 20px;

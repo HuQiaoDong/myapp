@@ -18,7 +18,8 @@
         v-for="(item,index) in newsongs"
         :key="index"
         :item="item"
-        @click.native="sendSongId(item)"
+        @click.native="sendSongId(item,index)"
+        ref="childs"
       ></NewSongItem>
     </div>
     <!-- .
@@ -75,9 +76,22 @@ export default {
           console.log(error);
         });
     },
-    sendSongId(item) {
+    sendSongId(item,index) {
       console.log(item.id);
       this.$emit("tran-song-id", item);
+      this.$refs.childs.forEach(function(item,index){
+        console.log(item,index);
+        for(let key in item.isPlay){
+          item.isPlay[key] = false;
+        }
+        item.isPlay["icon"] = true;
+        item.isPlay["icon-play"] = true;
+      })
+      this.$refs.childs[index].isPlay["icon"] = false;
+      this.$refs.childs[index].isPlay["icon-play"] = false;
+      this.$refs.childs[index].isPlay["fa"] = true;
+      this.$refs.childs[index].isPlay["fa-volume-up"] = true;
+      // console.log(this.$refs.childs);
       // for (let i in this.isPlay) {
       //   this.isPlay[i] = false;
       // }

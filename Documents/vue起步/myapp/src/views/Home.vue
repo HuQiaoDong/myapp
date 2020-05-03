@@ -41,28 +41,35 @@ export default {
     };
   },
   components: {
-    // HelloWorld
     CardTitle,
     SongListCard,
     NewSongItem
   },
   methods: {
     getPersonalized: function() {
+      this.end = this.end + 6;
+      console.log(this.end);
+      
       this.axios
         .get("/personalized")
         .then(response => {
+          console.log('缓存失效,Ajax重新获取歌单') ;
+          
           let res = response.data.result;
           this.personalized = res;
           window.localStorage.setItem(
             "personalized",
             JSON.stringify({
-              expire: Date.now() * 1 * 60 * 60 * 1000,
-              result: response.data.result
+              expire: Date.now() + 4.8 * 60 * 60 * 1000,
+              result: response.data.result,
             })
           );
           // this.personalized.push(res);
           // console.log(this.personalized);
-          console.log(res);
+          res.forEach((item,index) => {
+            console.log("今日歌单",item.name,index);     
+          });
+          this.updatePersonalizeds++;
         })
         .catch(error => {
           console.log(error);
@@ -85,19 +92,16 @@ export default {
       this.axios
         .get("/personalized/newsong")
         .then(response => {
-          console.log(response);
+          // console.log(response);
 
           this.newsongs = response.data.result;
           window.localStorage.setItem(
             "newsong",
             JSON.stringify({
-              expire: Date.now() * 1 * 60 * 60 * 1000,
+              expire: Date.now() + 4.8 * 60 * 60 * 1000,
               result: response.data.result
             })
           );
-          // this.personalized.push(res);
-          // console.log(this.personalized);
-          console.log("歌单", this.newsongs);
         })
         .catch(error => {
           console.log(error);
@@ -121,18 +125,31 @@ export default {
   },
 
   created() {
-    this.getNewSong();
+    console.log("Home被创建");
     // this.getPersonalized();
     const cachePersonalizeds = JSON.parse(
       window.localStorage.getItem("personalized")
     );
     if (cachePersonalizeds && cachePersonalizeds.expire > Date.now()) {
       this.personalized = cachePersonalizeds.result;
+      console.log('从缓存中获取推荐歌单数据');
+      
     } else {
       this.getPersonalized();
     }
-    console.log(cachePersonalizeds);
-  }
+
+        const cacheNewSong = JSON.parse(
+      window.localStorage.getItem("newsong")
+    );
+    if (cacheNewSong && cacheNewSong.expire > Date.now()) {
+      this.newsongs = cacheNewSong.result;
+      console.log('从缓存中获取推荐音乐数据');
+      
+    } else {
+      this.getNewSong();
+    }
+    // console.log(cachePersonalizeds);
+  },
   // beforeCreate() {}
 };
 </script>

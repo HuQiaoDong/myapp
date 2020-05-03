@@ -26,7 +26,24 @@
       <div :class="descClass">简介：{{songListDetail.description}}</div>
       <i class="fa fa-angle-down drop-down" @click="ctlDescHidden()"></i>
     </div>
-
+    <div class="songList">
+      <p class="title">歌曲列表</p>
+      <li v-for="(item,index) in songListDetail.tracks" :key="index" class="song-item">
+        <div class="index">{{index+1}}</div>
+        <div class="songinfo">
+          <div class="top">
+            <div class="song-name">
+              {{item.al.name}}
+              <span class="desc" :title="item.alia[0]">{{item.alia[0]}}</span>
+            </div>
+          </div>
+          <p class="bottom">
+            <span>{{getArticleInfo(item)}}</span>
+          </p>
+          <i class="icon icon-play"></i>
+        </div>
+      </li>
+    </div>
     <!-- playlistID:{{$route.query.id}} -->
   </div>
 </template>
@@ -74,8 +91,14 @@ export default {
     ctlDescHidden() {
       this.descClass.hidden = !this.descClass.hidden;
       // console.log(this.descClass.hidden);
+    },
+    getArticleInfo(songItem) {
+      console.log(songItem);
+
+      return songItem.ar.map(ar => ar.name).join("/") + "-" + songItem.al.name;
     }
   },
+
   // created() {
   //   // this.getSongListDetail();
   //   const cacheSongListDetail = JSON.parse(
@@ -258,7 +281,81 @@ export default {
     .drop-down {
       float: right;
       font-size: 20px;
+      color: #bebebe;
     }
+  }
+  .songList {
+    .title {
+      height: 20px;
+      background-color: #eeeff0;
+      line-height: 20px;
+      text-indent: 1em;
+      margin-top: 7px;
+      font-size: 12px;
+      color: #666666;
+    }
+    .song-item {
+      display: flex;
+      list-style: none;
+      border-bottom: 1px #f0f0f0 solid;
+      height: 55px;
+      padding: 6px 0px;
+      position: relative;
+      .index {
+        font-size: 17px;
+        color: #999999;
+        width: 40px;
+        height: 43px;
+        text-align: center;
+        line-height: 43px;
+      }
+      .top {
+        .song-name {
+          color: #333333;
+          width: 300px;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
+          font-size: 17px;
+          .desc {
+            width: 260px;
+            //   display: inline-block;
+            margin-left: 5px;
+            color: #888888;
+          }
+        }
+      }
+
+      .bottom {
+        span {
+          width: 300px;
+          display: inline-block;
+          color: #888888;
+          font-size: 12px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: -webkit-box;
+          -webkit-line-clamp: 1;
+          -webkit-box-orient: vertical;
+        }
+      }
+    }
+  }
+}
+.icon {
+  background-image: url("../assets/index_icon_2x.png");
+  display: inline-block;
+  background-size: 166px auto;
+  &.icon-play {
+    width: 25px;
+    height: 25px;
+    background-position-x: -23px;
+    position: absolute;
+    right: 10px;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    padding: 0 10px;
   }
 }
 </style>

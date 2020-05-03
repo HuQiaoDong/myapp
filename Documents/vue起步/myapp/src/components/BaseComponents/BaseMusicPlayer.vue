@@ -1,108 +1,120 @@
 <template>
-  <div class="player">
-    <div class="info-scope">
-      <img :src="songInfo.picUrl" alt />
-      <div class="songInfo">
-        <h5 class="s-name">{{songInfo.song.name}}</h5>
-        <span class="author">{{songInfo.song.artists[0].name}}</span>
+  <transition name="custom-classes-transition" leave-active-class="animated fadeOutDown">
+    <div class="music-player">
+      <div class="mask" :style="{backgroundImage: `url(${currentSong.picUrl})`}"></div>
+      <div class="cover">
+        <img src="../../assets/needle.png" alt="" class="needle">
+        <img :src="currentSong.picUrl" alt class="cover-img" />
+        <img src="../../assets/disc-ip6.png" alt class="border" />
       </div>
-    </div>
-    <div class="control">
-      <canvas id="play-progress" width="25" height="25"></canvas>
-      <i class="fa fa-play" aria-hidden="true"></i>
-      <i class="fa fa-bars" aria-hidden="true"></i>
-    </div>
-          <audio :src="songUrl" controls style="height:36px;display:none"></audio>
-  </div>
+      <header>
+        <i class="fa fa-arrow-left" aria-hidden="true" @click="closeWindow"></i>
+        <div class="song-info">
+          <h3>{{currentSong.song.name}}</h3>
+          <p>{{currentSong.song.artists[0].name}}</p>
+        </div>
+      </header>
+      <footer>
 
+      </footer>
+    </div>
+  </transition>
 </template>
 
 <script>
 export default {
-  // name: BaseMusicPlayer
-  props: ["songUrl", "songInfo"],
-  created() {
-    console.log(this.songUrl);
-    console.log(this.$el.audio);
-  },
   mounted() {
-    let audio = document.querySelector("audio");
-    /** @type HTMLAudioElement */
-    /** @type HTMLCanvasElement */
-    console.log(audio);
-    // audio.play();
-    let canvas = document.querySelector("canvas");
-    let context = canvas.getContext("2d");
-    console.log(context);
-    
-    context.beginPath();
-    context.lineWidth = 1.5;
-    // context.moveTo(0,0);
-    // context.lineTo(12.5,12.5);
-    context.arc(12.5,12.5,12.5,0,2*Math.PI);
-    context.stroke();
-    context.closePath();
+    document.body.style.overflow = "hidden"; //禁止滚动
+    // console.log(window.innerHeight, this.$el);
+    console.log(this.currentSong.picUrl);
+
+    this.$el.style.height = window.innerHeight + "px";
+  },
+  data() {
+    return {
+      //   show:this.show,
+    };
+  },
+  props: ["currentSong"],
+  methods: {
+    closeWindow() {
+      // this.show = !this.show;
+      // this.$emit('trans-window-status',this.show)
+      // this.close = !close;
+      document.body.style.overflow = "";
+    }
   }
 };
 </script>
 
 <style lang="less" scoped>
-.player {
-  padding: 3px 0px;
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.music-player {
   position: fixed;
+  top: 0;
+  z-index: 9999;
   width: 100%;
-  height: 40px;
-  bottom: 0;
-  display: flex;
-  justify-content: space-between;
-  border-top: 1px solid #efefef;
-  background-color: aqua;
-  .info-scope {
+  header {
     display: flex;
-    margin-left: 3px;
-    img {
-      width: 35px;
-      height: 35px;
-      border-radius: 50%;
-    }
-    .songInfo {
-      margin-left: 5px;
-      line-height: 1.2;
-      h5 {
-        font-size: 14px;
-      }
-      span {
-        font-size: 12px;
-        color: #888888;
-      }
+    color: #efefef;
+    height: 50px;
+    background-color: rgba(100, 100, 100, 0.2);
+    i {
+      height: inherit;
+      padding: 15px 10px;
+      font-size: 20px;
     }
   }
-  .control {
-    margin-right: 10px;
-    display: flex;
-    justify-content: space-between;
-    padding: 5px 0px;
+  background-color: rgba(0, 0, 0, 0);
+  .mask {
+    position: fixed;
+    top: 0;
+    filter: blur(30px) brightness(0.5);
+    transform: scale(2);
+    width: inherit;
+    height: inherit;
+    z-index: -1;
+    background-size: cover;
+    background-position: center;
+  }
+  .cover {
     position: relative;
-    width: 50px;
-    canvas{
-      z-index: 999;
-      position: absolute;
-      top: 1px;
-      left: -8px;
-      border: 1px solid red;
+    .needle{
+        z-index: 10;
+        width: 100px;
+        position: absolute;
+        top: 50px;
+        left: 0;
+        right: 0;
+        margin: auto;
+        // transform: rotate(-30deg);
     }
-    // .fa-play{
-    //   font-size: 5px;
-    // }
-    i{
-      text-align: center;
-      &:nth-child(2){
-        padding: 4px 0px 0px 1px;
-        font-size: 5px;
-      }
-      &:nth-child(3){
-        font-size: 20px;
-      }
+    .cover-img {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 150px;
+      margin: auto;
+      border-radius: 50%;
+      width: 210px;
+      height: 210px;
+      animation: rotate 10s linear infinite;
+    }
+    .border {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 110px;
+      margin: auto;
+      width: 300px;
+      height: 300px;
     }
   }
 }

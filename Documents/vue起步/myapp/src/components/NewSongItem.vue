@@ -4,7 +4,7 @@
       <div class="top">
         <div class="song-name">
           {{item.name}}
-          <span class="desc">{{item.song.alias[0]}}</span>
+          <span class="desc" :title="item.song.alias[0]">{{item.song.alias[0]}}</span>
         </div>
       </div>
       <p class="bottom">
@@ -19,7 +19,7 @@
 <script>
 export default {
   name: "NewSongItem",
-  props: ["item","isplay"],
+  props: ["item", "isplay"],
   data() {
     return {
       isPlay: {
@@ -51,8 +51,8 @@ export default {
         songItem.song.album.name
       );
     },
-    changeStatus(){
-      for(let i in this.isPlay){
+    changeStatus() {
+      for (let i in this.isPlay) {
         this.isPlay[i] = false;
       }
       this.isPlay["fa"] = true;
@@ -89,13 +89,15 @@ export default {
     position: relative;
 
     .top {
-      width: 350px;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
       .song-name {
+        color: #333333;
+        width: 320px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
         font-size: 17px;
         .desc {
+          width: 260px;
           //   display: inline-block;
           margin-left: 5px;
           color: #888888;

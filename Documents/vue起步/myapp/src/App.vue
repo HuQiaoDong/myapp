@@ -7,30 +7,39 @@
       一级路由出口
     </ul>-->
     <!-- <keep-alive> -->
-      <router-view @tran-song-id="getCurrentSongUrl($event)"></router-view>
+    <router-view @tran-song-id="getCurrentSongUrl($event)"></router-view>
     <!-- </keep-alive> -->
 
     <!-- 播放器 -->
-    <BaseMusicPlayer :songUrl="currentSongUrl" :songInfo="currentSongInfo"></BaseMusicPlayer>
+    <BaseMusicControler
+      v-if="currentSongUrl!=''"
+      :songUrl="currentSongUrl"
+      :songInfo="currentSongInfo"
+    ></BaseMusicControler>
   </div>
 </template>
 <script>
 export default {
   data() {
     return {
-      currentSongInfo:'',
+      currentSongInfo: "",
       currentSongUrl: ""
     };
   },
   methods: {
     getCurrentSongUrl(params) {
       this.currentSongInfo = params;
-      this.currentSongUrl = `https://music.163.com/song/media/outer/url?id=${params.id}.mp3`
+      this.currentSongUrl = `https://music.163.com/song/media/outer/url?id=${params.id}.mp3`;
       console.log(this.currentSongUrl);
     }
   },
+  mounted() {
+    window.onload = function() {
+      console.log("应用创建");
+    };
+  },
   created() {
-    console.log(this.currentSongId);
+    // console.log(this.currentSongId);
   }
 };
 </script>
@@ -44,8 +53,10 @@ export default {
 }
 
 #nav {
-  padding: 30px 0px;
+  margin: 30px 0px 30px 0px;
+  padding-bottom: 10px;
   display: flex;
+  border-bottom: 1px solid #eeeeee;
   li {
     flex: 1;
     text-align: center;

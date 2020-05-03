@@ -56,8 +56,8 @@ export default {
   },
   created() {
     this.playCount = this.getPlayCount(this.item.playCount);
-    console.log(this.playCount);
-    console.log(this.item);
+    // console.log(this.playCount);
+    // console.log(this.item);
     
   }
 };

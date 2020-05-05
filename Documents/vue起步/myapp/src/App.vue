@@ -7,7 +7,11 @@
       一级路由出口
     </ul>-->
     <!-- <keep-alive> -->
-    <router-view @tran-song-id="getCurrentSongUrl($event)" @tran-song-data="newSongsData=$event"></router-view>
+    <router-view
+      @tran-song-id="getCurrentSongUrl($event)"
+      @tran-song-data="newSongsData=$event"
+      :currentSongInfo="currentSongInfo"
+    ></router-view>
     <!-- </keep-alive> -->
 
     <!-- 播放器 -->
@@ -24,8 +28,8 @@ export default {
   data() {
     return {
       currentSongInfo: "",
-      currentSongUrl: '',
-      newSongsData:'',
+      currentSongUrl: "",
+      newSongsData: "",
     };
   },
   methods: {
@@ -42,7 +46,6 @@ export default {
   },
   created() {
     // console.log(this.currentSongId);
-    
   }
 };
 </script>

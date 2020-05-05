@@ -15,13 +15,14 @@
         ></SongListCard>
       </div>
     </div>
-    <div class="newsong">
+    <div class="newsong" :class="[currentSongInfo ?'margin-bottom-40px':'']">
       <CardTitle class="card-title">最新音乐</CardTitle>
       <NewSongItem
         v-for="(item,index) in newsongs"
         :key="index"
         :item="item"
         :newsongs="newsongs"
+        :currentSongInfo="currentSongInfo"
         @click.native="sendSongId(item,index,newsongs)"
         ref="childs"
       ></NewSongItem>
@@ -43,9 +44,10 @@ export default {
     return {
       showLoading: "",
       personalized: [],
-      newsongs: []
+      newsongs: [],
     };
   },
+  props: ["currentSongInfo"],
   components: {
     CardTitle,
     SongListCard,
@@ -85,27 +87,6 @@ export default {
       console.log(item.id);
       this.$emit("tran-song-id", item);
       this.$emit("tran-song-data",newSongsData);
-      this.$refs.childs.forEach(function(item, index) {
-        console.log(item, index);
-        for (let key in item.isPlay) {
-          item.isPlay[key] = false;
-        }
-        item.isPlay["icon"] = true;
-        item.isPlay["icon-play"] = true;
-      });
-      this.$refs.childs[index].isPlay["icon"] = false;
-      this.$refs.childs[index].isPlay["icon-play"] = false;
-      this.$refs.childs[index].isPlay["fa"] = true;
-      this.$refs.childs[index].isPlay["fa-volume-up"] = true;
-      // console.log(this.$refs.childs);
-      // for (let i in this.isPlay) {
-      //   this.isPlay[i] = false;
-      // }
-      // this.isPlay["fa"] = true;
-      // this.isPlay["fa-volume-up"] = true;
-      // console.log(this.$el.div);
-
-      // console.log(this.isPlay);
     },
     getNewSong() {
       this.axios
@@ -190,6 +171,9 @@ export default {
     flex-basis: 32.8%;
     // flex-grow: 1;
   }
+}
+.margin-bottom-40px{
+  margin-bottom: 40px;
 }
 .loading {
   position: fixed;

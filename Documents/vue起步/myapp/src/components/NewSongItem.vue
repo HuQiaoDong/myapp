@@ -1,5 +1,5 @@
 <template>
-  <ul class="list" @click="changeStatus">
+  <ul class="list" >
     <li class="song-item">
       <div class="top">
         <div class="song-name">
@@ -12,21 +12,23 @@
         <span>{{getArticleInfo(item)}}</span>
       </p>
     </li>
-    <i :class="isPlay"></i>
+    <i :class="[currentSongInfo.id == item.id? playing : pause ]"></i>
   </ul>
 </template>
 
 <script>
 export default {
   name: "NewSongItem",
-  props: ["item", "isplay","newsongs"],
+  props: ["item", "isplay", "newsongs","currentSongInfo"],
   data() {
     return {
-      isPlay: {
+      playing: {
+        fa: true,
+        "fa-volume-up": true
+      },
+      pause: {
         icon: true,
-        "icon-play": true,
-        fa: false,
-        "fa-volume-up": false
+        "icon-play": true
       }
     };
   },
@@ -51,13 +53,6 @@ export default {
         songItem.song.album.name
       );
     },
-    changeStatus() {
-      for (let i in this.isPlay) {
-        this.isPlay[i] = false;
-      }
-      this.isPlay["fa"] = true;
-      this.isPlay["fa-volume-up"] = true;
-    }
   }
 };
 </script>

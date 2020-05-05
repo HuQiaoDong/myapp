@@ -14,20 +14,22 @@
       <div class="right">
         <h2>{{songListDetail.name}}</h2>
         <div class="actor">
-          <img :src="songListDetail.creator.avatarUrl" alt />
-          <span>{{songListDetail.creator.nickname}}</span>
+          <img :src="songListDetail ? songListDetail.creator.avatarUrl :''" alt />
+          <span>{{songListDetail?songListDetail.creator.nickname:''}}</span>
         </div>
       </div>
     </header>
     <div class="info">
-      <div class="tags" v-if="tags">
+      <div class="tags" v-if='tags!=""'>
         <label>标签：</label>
         <span v-for="(tag,index) in tags" :key="index">{{tag}}</span>
       </div>
-      <div :class="descClass">简介：{{songListDetail.description}}</div>
-      <i class="fa fa-angle-down drop-down" @click="ctlDescHidden()"></i>
+      <div  @click="ctlDescHidden()">
+        <div :class="descClass">简介：{{songListDetail.description}}</div>
+        <i class="fa drop-down" :class="[descClass.hidden ? 'fa-angle-down' : 'fa-angle-up']"></i>
+      </div>
     </div>
-    <div class="songList">
+    <div class="songList" :class="[currentSongInfo ?'margin-bottom-40px':'']">
       <p class="title">歌曲列表</p>
       <li
         v-for="(item,index) in songListDetail.tracks"
@@ -47,7 +49,7 @@
           <p class="bottom">
             <span>{{getArticleInfo(item)}}</span>
           </p>
-          <i class="fa fa-volume-up" v-if="playing"></i>
+          <i class="fa fa-volume-up" v-if="currentSongInfo && currentSongInfo.id == item.id"></i>
           <i class="icon icon-play" v-else></i>
         </div>
       </li>
@@ -65,14 +67,14 @@ export default {
       songListId: this.$route.query.id,
       playCount: this.$route.query.playcount,
       songListDetail: "",
-      // tags:this.songListDetail.tags,
-      // isHidden: true,
+      tags:[],
       descClass: {
         hidden: true,
         description: true
       }
     };
   },
+  props: ["currentSongInfo"],
   methods: {
     getSongListDetail() {
       this.axios
@@ -396,5 +398,8 @@ export default {
     margin: auto;
     padding: 0 10px;
   }
+}
+.margin-bottom-40px{
+  margin-bottom: 40px;
 }
 </style>

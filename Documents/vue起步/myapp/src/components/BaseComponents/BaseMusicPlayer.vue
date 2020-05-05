@@ -1,22 +1,32 @@
 <template>
   <transition name="custom-classes-transition" leave-active-class="animated fadeOutDown">
     <div class="music-player">
-      <div class="mask" :style="{backgroundImage: `url(${currentSong.picUrl})`}"></div>
+      <div
+        class="mask"
+        :style="{backgroundImage: `url(${currentSong.picUrl? currentSong.picUrl : currentSong.al.picUrl})`}"
+      ></div>
       <div class="cover">
-        <img src="../../assets/needle.png" alt="" class="needle">
-        <img :src="currentSong.picUrl" alt class="cover-img" />
+        <img src="../../assets/needle.png" alt class="needle" />
+        <img
+          :src="currentSong.picUrl ? currentSong.picUrl : currentSong.al.picUrl"
+          alt
+          class="cover-img"
+        />
         <img src="../../assets/disc-ip6.png" alt class="border" />
       </div>
       <header>
         <i class="fa fa-arrow-left" aria-hidden="true" @click="closeWindow()"></i>
         <div class="song-info">
-          <h3>{{currentSong.song.name}}</h3>
-          <p>{{currentSong.song.artists[0].name}}</p>
+          <div class="songTitle">
+            <h3>{{currentSong.song ? currentSong.song.name : currentSong.al.name}}</h3>
+            <span
+              v-if="currentSong.song.alias[0]||currentSong.alia"
+            >{{currentSong.song ? `(${currentSong.song.alias[0]})` : `(${currentSong.alia[0]})`}}</span>
+          </div>
+          <p>{{currentSong.song ? currentSong.song.artists[0].name : currentSong.ar[0].name}}</p>
         </div>
       </header>
-      <footer>
-
-      </footer>
+      <footer></footer>
     </div>
   </transition>
 </template>
@@ -26,20 +36,20 @@ export default {
   mounted() {
     document.body.style.overflow = "hidden"; //禁止滚动
     // console.log(window.innerHeight, this.$el);
-    console.log(this.currentSong.picUrl);
 
     this.$el.style.height = window.innerHeight + "px";
   },
   data() {
     return {
       //   show:this.show,
+      playerShow: ""
     };
   },
-  props: ["currentSong","show"],
+  props: ["currentSong", "show"],
   methods: {
     closeWindow() {
-      this.show = !this.show;
-      this.$emit('close',this.show);
+      this.playerShow = !this.show;
+      this.$emit("close", this.playerShow);
       // this.close = !close;
       document.body.style.overflow = "";
     }
@@ -66,6 +76,22 @@ export default {
     color: #efefef;
     height: 50px;
     background-color: rgba(100, 100, 100, 0.2);
+    .song-info {
+      padding: 5px 0px;
+      >p{
+        font-size: 12px;
+        color: #888888;
+      }
+      .songTitle {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        width: 80vw;
+        h3 {
+          display: inline-block;
+        }
+      }
+    }
     i {
       height: inherit;
       padding: 15px 10px;
@@ -86,15 +112,15 @@ export default {
   }
   .cover {
     position: relative;
-    .needle{
-        z-index: 10;
-        width: 100px;
-        position: absolute;
-        top: 50px;
-        left: 0;
-        right: 0;
-        margin: auto;
-        // transform: rotate(-30deg);
+    .needle {
+      z-index: 10;
+      width: 100px;
+      position: absolute;
+      top: 50px;
+      left: 0;
+      right: 0;
+      margin: auto;
+      // transform: rotate(-30deg);
     }
     .cover-img {
       position: absolute;

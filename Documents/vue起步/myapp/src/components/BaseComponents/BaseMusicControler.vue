@@ -1,7 +1,12 @@
 <template>
   <div class="player">
     <div class="info-scope" @click="show=!show">
-      <img :src="songInfo.picUrl ? songInfo.picUrl : songInfo.al.picUrl" alt :class="{active:isPlay}" class="rotate" />
+      <img
+        :src="songInfo.picUrl ? songInfo.picUrl : songInfo.al.picUrl"
+        alt
+        :class="{active:isPlay}"
+        class="rotate"
+      />
       <div class="songInfo">
         <h5 class="s-name">{{songInfo.song ? songInfo.song.name : songInfo.al.name}}</h5>
         <span class="author">{{songInfo.song ? songInfo.song.artists[0].name : songInfo.ar[0].name}}</span>
@@ -34,7 +39,12 @@
       enter-active-class="animated fadeInUp"
       leave-active-class="animated fadeOutDown"
     >
-      <CurrentPlayList v-if="showPlayList" :newSongsData="newSongsData"></CurrentPlayList>
+      <CurrentPlayList
+        v-if="showPlayList"
+        :newSongsData="newSongsData"
+        :currentSongInfo="songInfo"
+        @tran-song-id="$parent.getCurrentSongUrl($event)"
+      ></CurrentPlayList>
     </transition>
 
     <transition
@@ -68,7 +78,7 @@ export default {
       play: true,
       isPlay: false,
       show: false,
-      showPlayList: false
+      showPlayList: false,
     };
   },
   methods: {
@@ -172,18 +182,6 @@ export default {
     height: 100vh;
     position: fixed;
     top: 0;
-  }
-  .current-play-list {
-    // margin: auto;
-    z-index: 99999;
-    position: fixed;
-    width: 95%;
-    left: 2.5%;
-    bottom: 20px;
-    height: 500px;
-    border-radius: 20px;
-    background-color: white;
-    padding: 5px 10px 0px;
   }
 
   audio {

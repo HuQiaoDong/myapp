@@ -1,6 +1,7 @@
 <template>
   <div class="playlist">
     <header class="header">
+      <i class="fa fa-arrow-left" @click="returnLastRouter"></i>
       <div class="mask" :style="{backgroundImage: `url(${songListDetail.coverImgUrl})`}"></div>
       <div class="left">
         <img :src="songListDetail.coverImgUrl" alt />
@@ -28,7 +29,13 @@
     </div>
     <div class="songList">
       <p class="title">歌曲列表</p>
-      <li v-for="(item,index) in songListDetail.tracks" :key="index" class="song-item">
+      <li
+        v-for="(item,index) in songListDetail.tracks"
+        :key="index"
+        class="song-item"
+        @click="sendDataToControler(item,songListDetail.tracks)"
+        @touchstart="playing = !playing"
+      >
         <div class="index">{{index+1}}</div>
         <div class="songinfo">
           <div class="top">
@@ -40,7 +47,8 @@
           <p class="bottom">
             <span>{{getArticleInfo(item)}}</span>
           </p>
-          <i class="icon icon-play"></i>
+          <i class="fa fa-volume-up" v-if="playing"></i>
+          <i class="icon icon-play" v-else></i>
         </div>
       </li>
     </div>
@@ -53,6 +61,7 @@ export default {
   name: "PlayList",
   data() {
     return {
+      playing: false,
       songListId: this.$route.query.id,
       playCount: this.$route.query.playcount,
       songListDetail: "",
@@ -93,9 +102,17 @@ export default {
       // console.log(this.descClass.hidden);
     },
     getArticleInfo(songItem) {
-      console.log(songItem);
+      // console.log(songItem);
 
       return songItem.ar.map(ar => ar.name).join("/") + "-" + songItem.al.name;
+    },
+    returnLastRouter() {
+      this.$router.go(-1);
+    },
+    sendDataToControler(item, tracks) {
+      console.log(item, tracks);
+      this.$emit("tran-song-id", item);
+      this.$emit("tran-song-data", tracks);
     }
   },
 
@@ -187,6 +204,12 @@ export default {
     position: relative;
     color: white;
     overflow: hidden;
+    > i {
+      position: absolute;
+      top: 7px;
+      left: 7px;
+      font-size: 20px;
+    }
     .mask {
       position: absolute;
       top: 0px;
@@ -308,6 +331,22 @@ export default {
         height: 43px;
         text-align: center;
         line-height: 43px;
+      }
+      .fa {
+        display: inline-block;
+        width: 25px;
+        height: 25px;
+        line-height: 25px;
+        text-align: center;
+        position: absolute;
+        right: 10px;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+        // padding: 0 10px;
+        &.fa-volume-up {
+          color: red;
+        }
       }
       .top {
         .song-name {

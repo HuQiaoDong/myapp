@@ -1,5 +1,8 @@
 <template>
   <div class="home">
+    <div class="loading" v-if="showLoading">
+      <img src="../assets/playing.svg" alt />
+    </div>
     <BaseHomeLink></BaseHomeLink>
     <div class="personlized">
       <CardTitle class="card-title">推荐歌单</CardTitle>
@@ -18,7 +21,8 @@
         v-for="(item,index) in newsongs"
         :key="index"
         :item="item"
-        @click.native="sendSongId(item,index)"
+        :newsongs="newsongs"
+        @click.native="sendSongId(item,index,newsongs)"
         ref="childs"
       ></NewSongItem>
     </div>
@@ -37,8 +41,9 @@ export default {
   name: "Home",
   data() {
     return {
+      showLoading: "",
       personalized: [],
-      newsongs: [],
+      newsongs: []
     };
   },
   components: {
@@ -50,25 +55,25 @@ export default {
     getPersonalized: function() {
       this.end = this.end + 6;
       console.log(this.end);
-      
+
       this.axios
         .get("/personalized")
         .then(response => {
-          console.log('缓存失效,Ajax重新获取歌单') ;
-          
+          console.log("缓存失效,Ajax重新获取歌单");
+
           let res = response.data.result;
           this.personalized = res;
           window.localStorage.setItem(
             "personalized",
             JSON.stringify({
               expire: Date.now() + 4.8 * 60 * 60 * 1000,
-              result: response.data.result,
+              result: response.data.result
             })
           );
           // this.personalized.push(res);
           // console.log(this.personalized);
-          res.forEach((item,index) => {
-            console.log("今日歌单",item.name,index);     
+          res.forEach((item, index) => {
+            console.log("今日歌单", item.name, index);
           });
           this.updatePersonalizeds++;
         })
@@ -76,17 +81,18 @@ export default {
           console.log(error);
         });
     },
-    sendSongId(item,index) {
+    sendSongId(item, index,newSongsData) {
       console.log(item.id);
       this.$emit("tran-song-id", item);
-      this.$refs.childs.forEach(function(item,index){
-        console.log(item,index);
-        for(let key in item.isPlay){
+      this.$emit("tran-song-data",newSongsData);
+      this.$refs.childs.forEach(function(item, index) {
+        console.log(item, index);
+        for (let key in item.isPlay) {
           item.isPlay[key] = false;
         }
         item.isPlay["icon"] = true;
         item.isPlay["icon-play"] = true;
-      })
+      });
       this.$refs.childs[index].isPlay["icon"] = false;
       this.$refs.childs[index].isPlay["icon-play"] = false;
       this.$refs.childs[index].isPlay["fa"] = true;
@@ -98,9 +104,8 @@ export default {
       // this.isPlay["fa"] = true;
       // this.isPlay["fa-volume-up"] = true;
       // console.log(this.$el.div);
-      
+
       // console.log(this.isPlay);
-      
     },
     getNewSong() {
       this.axios
@@ -146,25 +151,33 @@ export default {
     );
     if (cachePersonalizeds && cachePersonalizeds.expire > Date.now()) {
       this.personalized = cachePersonalizeds.result;
-      console.log('从缓存中获取推荐歌单数据');
-      
+      console.log("从缓存中获取推荐歌单数据");
     } else {
       this.getPersonalized();
     }
 
-        const cacheNewSong = JSON.parse(
-      window.localStorage.getItem("newsong")
-    );
+    const cacheNewSong = JSON.parse(window.localStorage.getItem("newsong"));
     if (cacheNewSong && cacheNewSong.expire > Date.now()) {
       this.newsongs = cacheNewSong.result;
-      console.log('从缓存中获取推荐音乐数据');
-      
+      console.log("从缓存中获取推荐音乐数据");
     } else {
       this.getNewSong();
     }
     // console.log(cachePersonalizeds);
   },
-  // beforeCreate() {}
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.showLoading = false;
+    });
+  },
+
+  beforeRouteLeave(to, from, next) {
+    // 导航离开该组件的对应路由时调用
+    // 可以访问组件实例 `this`
+    // console.log(to, from, "即将离开home");
+    this.showLoading = true;
+    next();
+  }
 };
 </script>
 <style lang="less" scoped>
@@ -178,7 +191,21 @@ export default {
     // flex-grow: 1;
   }
 }
-
+.loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  z-index: 999;
+  justify-content: center;
+  align-items: center;
+  img{
+    width: 36px;
+  }
+}
 .card-title {
   border-left: 2px solid red;
   padding-left: 5px;

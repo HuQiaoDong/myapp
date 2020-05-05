@@ -1,0 +1,32 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" >
+<!--
+2013-9-30: Created.
+-->
+<svg>
+<metadata>
+Created by iconfont
+</metadata>
+<defs>
+
+<font id="iconfont" horiz-adv-x="1024" >
+  <font-face
+    font-family="iconfont"
+    font-weight="500"
+    font-stretch="normal"
+    units-per-em="1024"
+    ascent="896"
+    descent="-128"
+  />
+    <missing-glyph />
+    
+    <glyph glyph-name="icon--" unicode="&#59252;" d="M811.52 422.4L330.24 734.72c-28.16 15.36-61.44 7.68-61.44-40.96V76.8c0-51.2 35.84-58.88 61.44-40.96l481.28 314.88c28.16 15.36 28.16 53.76 0 71.68zM320 97.28V673.28L775.68 384 320 97.28z"  horiz-adv-x="1024" />
+
+    
+    <glyph glyph-name="zanting" unicode="&#58894;" d="M304 720h80v-672h-80z m408 0h-64c-4.4 0-8-3.6-8-8v-656c0-4.4 3.6-8 8-8h64c4.4 0 8 3.6 8 8V712c0 4.4-3.6 8-8 8z"  horiz-adv-x="1024" />
+
+    
+
+
+  </font>
+</defs></svg>

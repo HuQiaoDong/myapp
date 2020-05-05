@@ -19,7 +19,7 @@
 <script>
 export default {
   name: "NewSongItem",
-  props: ["item", "isplay"],
+  props: ["item", "isplay","newsongs"],
   data() {
     return {
       isPlay: {

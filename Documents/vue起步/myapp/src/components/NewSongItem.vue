@@ -4,7 +4,7 @@
       <div class="top">
         <div class="song-name">
           {{item.name}}
-          <span class="desc" :title="item.song.alias[0]">{{item.song.alias[0]}}</span>
+          <span class="desc" :title="item.song.alias ? item.song.alias[0] :''">{{item.song.alias ? item.song.alias[0] :''}}</span>
         </div>
       </div>
       <p class="bottom">

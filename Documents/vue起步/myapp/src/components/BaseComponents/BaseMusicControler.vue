@@ -1,15 +1,10 @@
 <template>
   <div class="player">
     <div class="info-scope" @click="show=!show">
-      <img
-        :src="songInfo.picUrl ? songInfo.picUrl : songInfo.al.picUrl"
-        alt
-        :class="{active:isPlay}"
-        class="rotate"
-      />
-      <div class="songInfo">
-        <h5 class="s-name">{{songInfo.song ? songInfo.song.name : songInfo.al.name}}</h5>
-        <span class="author">{{songInfo.song ? songInfo.song.artists[0].name : songInfo.ar[0].name}}</span>
+      <img :src="imgUrl(songInfo)" alt :class="{active:isPlay}" class="rotate" />
+      <div class="songInfo" v-if="songInfo!=''">
+        <h5 class="s-name">{{songName(songInfo)}}</h5>
+        <span class="author">{{songAuthor(songInfo)}}</span>
       </div>
     </div>
     <div class="control">
@@ -55,7 +50,11 @@
       <BaseMusicPlayer
         v-if="show"
         :currentSong="songInfo"
+        :imgUrl="imgUrl(songInfo)"
+        :songName="songName(songInfo)"
+        :songAuthor="songAuthor(songInfo)"
         :show="show"
+        :isPlay="isPlay"
         @close="closeWindow($event)"
       ></BaseMusicPlayer>
     </transition>
@@ -67,9 +66,7 @@ import CurrentPlayList from "../CurrentPlayList";
 export default {
   // name: BaseMusicPlayer
   props: ["songUrl", "songInfo", "newSongsData"],
-  created() {
-    console.log("kk");
-  },
+  created() {},
   components: {
     CurrentPlayList
   },
@@ -79,12 +76,51 @@ export default {
       isPlay: false,
       show: false,
       showPlayList: false,
+      defalutPic: "../../assets/defaultImg.png",
+      currentSongInfo: this.songInfo
     };
   },
+  computed: {},
   methods: {
+    imgUrl: function(songInfo) {
+      if (songInfo.picUrl) {
+        return songInfo.picUrl;
+      } else if (songInfo.al) {
+        return songInfo.al.picUrl;
+      } else if (songInfo.artists) {
+        return songInfo.artists[0].img1v1Url;
+      }
+      // return this.songInfo.picUrl || this.songInfo.al.picUrl || this.defalutPic;
+    },
+    songName: function(songInfo) {
+      if (songInfo.song) {
+        return this.songInfo.song.name;
+      } else if (songInfo.al) {
+        return songInfo.al.name;
+      } else if (songInfo) {
+        return songInfo.name;
+      }
+      // return this.songInfo.song
+      //   ? this.songInfo.song.name
+      //   : this.songInfo.al.name;
+    },
+    songAuthor: function(songInfo) {
+      if (songInfo.song) {
+        return songInfo.song.artists[0].name;
+      } else if (songInfo.ar) {
+        return songInfo.ar[0].name;
+      } else if (songInfo.artists) {
+        return songInfo.artists[0].name;
+      }
+      // return this.songInfo.song || this.songInfo.ar
+      //   ? this.songInfo.song.artists[0].name || this.songInfo.ar[0].name
+      //   : this.songInfo.artists[0].name;
+    },
     changePlayStatus() {
       this.isPlay = !this.isPlay;
       this.play = !this.play;
+      console.log(this.$el.querySelector("audio"));
+
       this.isPlay
         ? this.$el.querySelector("audio").play()
         : this.$el.querySelector("audio").pause();

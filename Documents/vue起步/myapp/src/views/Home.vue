@@ -162,7 +162,12 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.personlized .personlized-list {
+.home{
+
+}
+.personlized{
+  margin-top: 20px;
+.personlized-list {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -172,6 +177,8 @@ export default {
     // flex-grow: 1;
   }
 }
+}
+
 .margin-bottom-40px{
   margin-bottom: 40px;
 }

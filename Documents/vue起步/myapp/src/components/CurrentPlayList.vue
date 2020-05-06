@@ -11,7 +11,7 @@
         <div class="songInfo" @click="playIndex(item,newSongsData)">
           <span
             :class="currentSongInfo.id == item.id ? 'playing' : ''"
-          >{{item.song ? item.song.name: item.al.name}}</span>
+          >{{item.name || item.song.name|| item.al.name}}</span>
           <span :class="currentSongInfo.id == item.id ? 'playing' : ''">-{{getArticleInfo(item)}}</span>
         </div>
 
@@ -38,8 +38,11 @@ export default {
     getArticleInfo(songItem) {
       if (songItem.song) {
         return songItem.song.artists.map(artist => artist.name).join("/");
-      } else {
+      } else if(songItem.ar) {
         return songItem.ar.map(ar => ar.name).join("/");
+      }
+      else if(songItem.artists){
+        return songItem.artists.map(artist => artist.name).join("/");
       }
     },
     playIndex(item,newSongsData){

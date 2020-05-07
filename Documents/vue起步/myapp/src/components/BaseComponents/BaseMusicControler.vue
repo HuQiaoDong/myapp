@@ -10,8 +10,8 @@
     <div class="control">
       <canvas
         id="play-progress"
-        width="25"
-        height="25"
+        width="25.5"
+        height="25.5"
         @click="changePlayStatus"
         :class="{border:!play}"
       ></canvas>
@@ -35,10 +35,11 @@
       leave-active-class="animated fadeOutDown"
     >
       <CurrentPlayList
-        v-if="showPlayList"
+        v-show="showPlayList"
         :newSongsData="newSongsData"
         :currentSongInfo="songInfo"
         @tran-song-id="$parent.getCurrentSongUrl($event)"
+        @change-play-way="playWay = $event"
       ></CurrentPlayList>
     </transition>
 
@@ -72,9 +73,11 @@ export default {
   },
   data() {
     return {
+      playWay: 1,
       play: true,
       isPlay: false,
       show: false,
+      songIndex: "",
       showPlayList: false,
       defalutPic: "../../assets/defaultImg.png",
       currentSongInfo: this.songInfo
@@ -116,6 +119,9 @@ export default {
       //   ? this.songInfo.song.artists[0].name || this.songInfo.ar[0].name
       //   : this.songInfo.artists[0].name;
     },
+    // orderPlay() {},
+    // randomPlay() {},
+    // ReplaySong() {},
     changePlayStatus() {
       this.isPlay = !this.isPlay;
       this.play = !this.play;
@@ -148,23 +154,57 @@ export default {
 
       audio.ontimeupdate = function() {
         let currentProgress = ((this.currentTime / this.duration) * 100) / 50;
-        context.clearRect(0, 0, 25, 25);
+        context.clearRect(0, 0, 26, 26);
         //绘制播放按钮外圈样式
         // context.beginPath();
         // context.strokeStyle = "#888888";
-        // context.lineWidth = 1.5;
+        // context.lineWidth = 1;
         // // context.moveTo(0,0);
         // // context.lineTo(12.5,12.5);
-        // context.arc(12.5, 12.5, 12.5, 0, 2 * Math.PI);
+        // context.arc(12.5, 12.5, 12, 0, 2 * Math.PI);
         // context.stroke();
         // context.closePath();
         //绘制圆形进度条
         context.beginPath();
         context.strokeStyle = "#FF0000";
         context.lineWidth = 1;
-        context.arc(12.5, 12.5, 12, 0, currentProgress * Math.PI);
+        context.arc(12.5, 12.5, 12.3, 0, currentProgress * Math.PI);
         context.stroke();
         context.closePath();
+
+        // if(audio.ended){
+
+        // }
+        if (audio.ended) {
+          that.newSongsData.forEach(function(item, index) {
+            if (that.songInfo == item) {
+              console.log(index);
+              // this.currentSongInfo =
+              that.songIndex = index;
+            }
+          });
+          switch (that.playWay) {
+            case 1:
+              that.songIndex++;
+              if (that.songIndex >= that.newSongsData.length) {
+                that.songIndex = 0;
+              }
+              break;
+            case 2:
+              that.songIndex;
+              break;
+            case 3:
+              that.songIndex = Math.floor(
+                Math.random() * that.newSongsData.length
+              );
+              break;
+          }
+
+          console.log(that.songIndex);
+
+          that.$parent.getCurrentSongUrl(that.newSongsData[that.songIndex]);
+          audio.play();
+        }
       };
     }
   },
@@ -195,7 +235,7 @@ export default {
 }
 .rotate {
   transform: rotate(0deg);
-  animation: rotate 6s linear infinite;
+  animation: rotate 10s linear infinite;
   animation-play-state: paused;
   &.active {
     animation-play-state: running;
@@ -222,7 +262,9 @@ export default {
 
   audio {
     height: 36px;
-    display: none;
+    // display: none;
+    position: absolute;
+    top: -100px;
   }
   .info-scope {
     width: 82%;

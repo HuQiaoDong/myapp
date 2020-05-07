@@ -31,10 +31,24 @@
         enter-active-class="animated fadeIn"
         leave-active-class="animated fadeOut"
       >
-        <div class="lyric" v-if="lyric" @click="lyric=!lyric">
-          <ul>
-            <li v-for="(row,index) in parsedLyric" :key="index">{{row.text}}</li>
-          </ul>
+        <div class="lyric" v-show="lyric" @click="lyric=!lyric">
+          <div class="volume-controler">
+            <i class="fa fa-volume-up"></i>
+            <div class="control-bar">
+              <span id="progress" class="progress"></span>
+              <span id="dragPoint" class="dragPoint"></span>
+            </div>
+          </div>
+          <div class="wrap">
+            <ul :style="{transform: `translateY(${-currentLyricIndex * 28}px)`}" class="scroll">
+              <li
+                v-for="(row,index) in parsedLyric"
+                :key="index"
+                class="lyricRow"
+                :class="{active: index===currentLyricIndex}"
+              >{{row.text}}</li>
+            </ul>
+          </div>
         </div>
       </transition>
       <footer></footer>
@@ -44,21 +58,41 @@
 
 <script>
 export default {
-  mounted() {
-    document.body.style.overflow = "hidden"; //禁止滚动
-    // console.log(window.innerHeight, this.$el)
-    this.$el.style.height = window.innerHeight + "px";
-  },
+  // mounted() {
+  //   document.body.style.overflow = "hidden"; //禁止滚动
+  //   // console.log(window.innerHeight, this.$el)
+  //   this.$el.style.height = window.innerHeight + "px";
+  // },
   data() {
     return {
       //   show:this.show,
       playerShow: "",
       lyric: false,
-      currentLyric: ""
+      currentLyric: null,
+      currentLyricIndex: ""
     };
   },
   props: ["currentSong", "show", "imgUrl", "songName", "songAuthor", "isPlay"],
   methods: {
+    // dragBar: function(el, progress) {
+    //   el.addEventListener("touchstart", function(e) {
+    //     let ev = e || window.event;
+
+    //     el.addEventListener("touchmove", function(e) {
+    //       let ev = e || window.event;
+    //       let touch = ev.targetTouches[0];
+    //       e.preventDefault();
+    //       // that.audio.muted = true;
+    //       // let bili = this.site.offsetWidth / 100;
+    //       // this.dragPoint.style.left = time - this.dragPoint.offsetWidth / 2 + 'px';
+    //     });
+    //     el.addEventListener("touchend", function(e) {
+    //       let ev = e || window.event;
+    //       e.preventDefault();
+    //       // that.audio.muted = false;
+    //     });
+    //   });
+    // },
     closeWindow: function() {
       this.playerShow = !this.show;
       this.$emit("close", this.playerShow);
@@ -81,6 +115,7 @@ export default {
           })
           .then(response => {
             this.currentLyric = response.data.lrc.lyric;
+            console.log(this.currentLyric);
 
             window.localStorage.setItem(
               "lyric" + this.currentSong.id,
@@ -114,8 +149,43 @@ export default {
       }
     }
   },
+  mounted() {
+    document.body.style.overflow = "hidden"; //禁止滚动
+
+    let audio = this.$parent.$el.querySelector("audio");
+
+    this.$el.style.height = "100vh";
+    console.log("kk", audio);
+
+    audio.ontimeupdate = () => {
+      let index;
+      for (let i = 0; i < this.parsedLyric.length; i++) {
+        if (audio.currentTime + 0.15 < this.parsedLyric[i].time) {
+          index = i - 1;
+          break;
+        }
+      }
+      if (index === undefined) {
+        index = this.parsedLyric.length - 1;
+      }
+      this.currentLyricIndex = index;
+    };
+    audio.volume = 1;
+    audio.onvolumechange = () => {
+      console.log(audio.volume);
+    };
+  },
   created() {
     this.getLyric();
+  },
+  watch: {
+    show: function(value) {
+      if (value) {
+        document.body.style.overflow = "hidden"; //禁止滚动
+      } else {
+        document.body.style.overflow = "";
+      }
+    }
   }
 };
 </script>
@@ -132,15 +202,83 @@ export default {
 .music-player {
   position: fixed;
   top: 0;
+  height: 100vh;
   z-index: 2000;
   width: 100%;
   .lyric {
+    width: 100%;
     color: #cacacc;
-    position: relative;
+
     z-index: 8888;
     height: 70vh;
-    border: 1px solid red;
-    background-color: rgba(100, 100, 100, 0.8);
+    //   音量条
+    .wrap {
+      position: relative;
+      // overflow-y: scroll;
+      overflow: hidden;
+      height: 100%;
+    }
+    .volume-controler {
+      width: 100%;
+      padding: 5%;
+      display: flex;
+      i {
+        font-size: 14px;
+        margin-right: 10px;
+      }
+      .control-bar {
+        margin: auto;
+        width: 95%;
+        height: 3px;
+        background: -webkit-linear-gradient(
+              rgba(250, 240, 230, 0.2),
+              rgba(250, 240, 230, 0.2)
+            )
+            no-repeat,
+          rgba(0, 0, 0, 0.2);
+        position: relative;
+        .progress {
+          height: 100%;
+          position: absolute;
+          top: 0px;
+          opacity: 0.6;
+          display: inline-block;
+          background-color: white;
+        }
+        .dragPoint {
+          position: absolute;
+          top: 0;
+          left: -5px;
+          bottom: 0;
+          margin: auto;
+          display: inline-block;
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          z-index: 100;
+          background-color: white;
+          opacity: 1;
+        }
+      }
+    }
+
+    ul {
+      position: absolute;
+      top: 30%;
+      left: 0;
+      right: 0;
+      &.scroll {
+        transition: transform 0.3s;
+      }
+      .lyricRow {
+        height: 28px;
+        line-height: 28px;
+        text-align: center;
+        &.active {
+          color: white;
+        }
+      }
+    }
   }
   header {
     display: flex;
@@ -171,12 +309,13 @@ export default {
   }
   background-color: rgba(0, 0, 0, 0);
   .mask {
+    height: 100%;
     position: fixed;
     top: 0;
+    background-color: rgba(100, 100, 100, 0.5);
     filter: blur(30px) brightness(0.5);
     transform: scale(2);
     width: inherit;
-    height: inherit;
     z-index: -1;
     background-size: cover;
     background-position: center;

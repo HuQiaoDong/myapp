@@ -29,7 +29,7 @@ export default {
     return {
       currentSongInfo: "",
       currentSongUrl: "",
-      newSongsData: [],
+      newSongsData: []
     };
   },
   methods: {
@@ -43,10 +43,12 @@ export default {
     window.onload = function() {
       console.log("应用创建");
     };
+    
   },
   created() {
     // console.log(this.currentSongId);
-  }
+  },
+
 };
 </script>
 <style lang="less">

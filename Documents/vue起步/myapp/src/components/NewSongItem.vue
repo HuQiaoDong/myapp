@@ -1,10 +1,13 @@
 <template>
-  <ul class="list" >
+  <ul class="list">
     <li class="song-item">
       <div class="top">
         <div class="song-name">
           {{item.name}}
-          <span class="desc" :title="item.song.alias ? item.song.alias[0] :''">{{item.song.alias ? item.song.alias[0] :''}}</span>
+          <span
+            class="desc"
+            :title="item.song.alias ? item.song.alias[0] :''"
+          >{{item.song.alias ? item.song.alias[0] :''}}</span>
         </div>
       </div>
       <p class="bottom">
@@ -19,7 +22,7 @@
 <script>
 export default {
   name: "NewSongItem",
-  props: ["item", "isplay", "newsongs","currentSongInfo"],
+  props: ["item", "isplay", "newsongs", "currentSongInfo"],
   data() {
     return {
       playing: {
@@ -52,7 +55,7 @@ export default {
         "-" +
         songItem.song.album.name
       );
-    },
+    }
   }
 };
 </script>

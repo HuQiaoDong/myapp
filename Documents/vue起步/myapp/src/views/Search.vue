@@ -263,6 +263,10 @@ export default {
     }
 
     .bottom {
+      width: 80vw;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
       span {
         color: #888888;
         font-size: 12px;

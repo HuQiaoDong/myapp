@@ -5,9 +5,10 @@
         <span>当前播放</span>
         <span>{{`(${newSongsData.length})`}}</span>
       </h3>
-
-      <img :src="playWayIcon" alt @click="switchPlayWay" />
-      <span>{{playWayText}}</span>
+      <div @click="switchPlayWay" class="playway">
+        <img :src="playWayIcon" alt />
+        <span>{{playWayText}}</span>
+      </div>
     </header>
 
     <ul class="playlist">
@@ -35,7 +36,7 @@ export default {
       playList: this.newSongsData,
       songIndex: "",
       playWay: 1,
-      playWayIcon: "img/order.0caa0572.svg",
+      playWayIcon: require("../assets/order.svg"),
       playWayText: "列表循环"
     };
   },
@@ -51,15 +52,15 @@ export default {
       }
       switch (this.playWay) {
         case 1:
-          this.playWayIcon = "img/order.0caa0572.svg";
+          this.playWayIcon = require("../assets/order.svg");
           this.playWayText = "列表循环";
           break;
         case 2:
-          this.playWayIcon = "img/loop.09574146.svg";
+          this.playWayIcon = require("../assets/loop.svg");
           this.playWayText = "单曲循环";
           break;
         case 3:
-          this.playWayIcon = "img/random.f73fdea9.svg";
+          this.playWayIcon = require("../assets/random.svg");
           this.playWayText = "随机播放";
           break;
 
@@ -110,15 +111,18 @@ export default {
   padding: 20px 20px 0px;
 
   header {
+    .playway{
+      display: inline-block;
+    }
     h3 {
       margin-bottom: 10px;
-      span{
-        &:nth-child(1){
+      span {
+        &:nth-child(1) {
           font-weight: 500;
           color: black;
           font-size: 18px;
         }
-        &:nth-child(2){
+        &:nth-child(2) {
           font-size: 14px;
           color: #888888;
         }

@@ -31,15 +31,15 @@
         enter-active-class="animated fadeIn"
         leave-active-class="animated fadeOut"
       >
-        <div class="lyric" v-show="lyric" @click="lyric=!lyric">
+        <div class="lyric" v-show="lyric">
           <div class="volume-controler">
-            <i class="fa fa-volume-up"></i>
+            <i class="fa fa-volume-up" @click="controlVolume"></i>
             <div class="control-bar">
               <span id="progress" class="progress"></span>
               <span id="dragPoint" class="dragPoint"></span>
             </div>
           </div>
-          <div class="wrap">
+          <div class="wrap" @click="lyric=!lyric">
             <ul :style="{transform: `translateY(${-currentLyricIndex * 28}px)`}" class="scroll">
               <li
                 v-for="(row,index) in parsedLyric"
@@ -93,6 +93,12 @@ export default {
     //     });
     //   });
     // },
+    controlVolume(){
+      let audio = document.querySelector('audio');
+      if(audio){
+        audio.muted = !audio.muted;
+      }
+    },
     closeWindow: function() {
       this.playerShow = !this.show;
       this.$emit("close", this.playerShow);
@@ -136,9 +142,15 @@ export default {
             var m = time.substr(0, 2);
             var s = time.substr(3, 2);
             var n = time.substr(5);
+            let k;
+            if (n.length == 4) {
+              k = 11;
+            } else if (n.length == 3) {
+              k = 10;
+            }
             return {
               time: Number(m) * 60 + Number(s) + Number(n),
-              text: item.substr(11) || "---------"
+              text: item.substr(k) || "---------"
             };
           } else {
             return {};
@@ -156,24 +168,22 @@ export default {
 
     this.$el.style.height = "100vh";
     console.log("kk", audio);
-
-    audio.ontimeupdate = () => {
-      let index;
-      for (let i = 0; i < this.parsedLyric.length; i++) {
-        if (audio.currentTime + 0.15 < this.parsedLyric[i].time) {
-          index = i - 1;
-          break;
+    // document.addEventListener
+    audio.addEventListener("timeupdate", () => {
+      if (this.parsedLyric) {
+        let index;
+        for (let i = 0; i < this.parsedLyric.length; i++) {
+          if (audio.currentTime + 0.15 < this.parsedLyric[i].time) {
+            index = i - 1;
+            break;
+          }
         }
+        if (index === undefined) {
+          index = this.parsedLyric.length - 1;
+        }
+        this.currentLyricIndex = index;
       }
-      if (index === undefined) {
-        index = this.parsedLyric.length - 1;
-      }
-      this.currentLyricIndex = index;
-    };
-    audio.volume = 1;
-    audio.onvolumechange = () => {
-      console.log(audio.volume);
-    };
+    });
   },
   created() {
     this.getLyric();
@@ -208,14 +218,13 @@ export default {
   .lyric {
     width: 100%;
     color: #cacacc;
-
     z-index: 8888;
     height: 70vh;
     //   音量条
     .wrap {
       position: relative;
-      // overflow-y: scroll;
-      overflow: hidden;
+      overflow-y: scroll;
+      // overflow: hidden;
       height: 100%;
     }
     .volume-controler {

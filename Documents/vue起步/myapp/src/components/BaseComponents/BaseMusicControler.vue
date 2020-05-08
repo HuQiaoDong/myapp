@@ -13,9 +13,9 @@
         width="25.5"
         height="25.5"
         @click="changePlayStatus"
-        :class="{border:!play}"
+        :class="{border:!isPlay}"
       ></canvas>
-      <img v-if="play" src="../../assets/stop.svg" />
+      <img v-if="isPlay" src="../../assets/stop.svg" />
       <!-- <i class="fa fa-bars" aria-hidden="true" @click="showPlayList = true"></i> -->
       <img v-else src="../../assets/play.svg" alt />
       <img src="../../assets/PlayList.svg" alt @click="showPlayList = !showPlayList" />
@@ -74,13 +74,12 @@ export default {
   data() {
     return {
       playWay: 1,
-      play: true,
       isPlay: false,
       show: false,
       songIndex: "",
       showPlayList: false,
       defalutPic: "../../assets/defaultImg.png",
-      currentSongInfo: this.songInfo
+      currentSongInfo: this.songInfo,
     };
   },
   computed: {},
@@ -124,7 +123,6 @@ export default {
     // ReplaySong() {},
     changePlayStatus() {
       this.isPlay = !this.isPlay;
-      this.play = !this.play;
       console.log(this.$el.querySelector("audio"));
 
       this.isPlay
@@ -142,18 +140,23 @@ export default {
       let context = canvas.getContext("2d");
       let that = this;
       audio.onloadstart = function() {
-        // audio.play();
         // that.isPlay = false;
-        that.play = false;
+        that.isPlay = false;
       };
       audio.oncanplay = function() {
         audio.play();
-        that.play = true;
         that.isPlay = true;
       };
-
+      audio.onplay=function(){
+        that.isPlay = true;
+      }
+      audio.onpause=function(){
+        that.isPlay = false;
+      }
       audio.ontimeupdate = function() {
         let currentProgress = ((this.currentTime / this.duration) * 100) / 50;
+        console.log(currentProgress);
+
         context.clearRect(0, 0, 26, 26);
         //绘制播放按钮外圈样式
         // context.beginPath();

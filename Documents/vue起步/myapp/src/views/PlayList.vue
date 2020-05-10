@@ -42,7 +42,7 @@
         <div class="songinfo">
           <div class="top">
             <div class="song-name">
-              {{item.al.name}}
+              {{item.name}}
               <span class="desc" :title="item.alia[0]">{{item.alia[0]}}</span>
             </div>
           </div>

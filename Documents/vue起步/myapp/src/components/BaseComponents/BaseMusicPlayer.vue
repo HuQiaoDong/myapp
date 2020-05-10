@@ -35,8 +35,8 @@
           <div class="volume-controler">
             <i class="fa fa-volume-up" @click="controlVolume"></i>
             <div class="control-bar">
-              <span id="progress" class="progress"></span>
-              <span id="dragPoint" class="dragPoint"></span>
+              <span class="progress"></span>
+              <span class="dragPoint volume"></span>
             </div>
           </div>
           <div class="wrap" @click="lyric=!lyric">
@@ -51,7 +51,38 @@
           </div>
         </div>
       </transition>
-      <footer></footer>
+
+      <footer>
+        <div class="k-bar">
+          <span
+            class="currentProgress"
+          >{{progressBarData ? `${progressBarData.currentMinute}:${progressBarData.currentSecond}`:"00:00"}}</span>
+          <div class="progress-bar">
+            <div class="control-bar">
+              <span
+                class="progress"
+                :style='{"width":(progressBarData ? progressBarData.time+"px":"")}'
+              ></span>
+              <!-- ${progressBarData.time}px`:width:0px} -->
+              <span
+                class="dragPoint process"
+                :style='{"left":(progressBarData ? progressBarData.t+"px":"")}'
+              ></span>
+            </div>
+          </div>
+          <span
+            class="totalProgress"
+          >{{progressBarData ?`${progressBarData.songMinute}:${progressBarData.songSecond}`:"00:00"}}</span>
+        </div>
+        <div class="play-control">
+          <img src="../../assets/order2.svg" alt class="con" @click="playWay" />
+          <img src="../../assets/prev.svg" alt class="con" @click="lastSong" />
+          <img src="../../assets/stop2.svg" v-if="isPlay" alt class="ppp" @click="playState()"/>
+          <img src="../../assets/play2.svg" v-else alt class="ppp" @click="playState()"/>
+          <img src="../../assets/next.svg" alt class="con" @click="nextSong" />
+          <img src="../../assets/PlayList2.svg" alt class="con" @click="showList" />
+        </div>
+      </footer>
     </div>
   </transition>
 </template>
@@ -69,33 +100,18 @@ export default {
       playerShow: "",
       lyric: false,
       currentLyric: null,
-      currentLyricIndex: ""
+      currentLyricIndex: "",
+      progressBarData: null
     };
   },
-  props: ["currentSong", "show", "imgUrl", "songName", "songAuthor", "isPlay"],
+  props: ["currentSong", "show", "imgUrl", "songName", "songAuthor", "isPlay","showPlayList"],
   methods: {
-    // dragBar: function(el, progress) {
-    //   el.addEventListener("touchstart", function(e) {
-    //     let ev = e || window.event;
-
-    //     el.addEventListener("touchmove", function(e) {
-    //       let ev = e || window.event;
-    //       let touch = ev.targetTouches[0];
-    //       e.preventDefault();
-    //       // that.audio.muted = true;
-    //       // let bili = this.site.offsetWidth / 100;
-    //       // this.dragPoint.style.left = time - this.dragPoint.offsetWidth / 2 + 'px';
-    //     });
-    //     el.addEventListener("touchend", function(e) {
-    //       let ev = e || window.event;
-    //       e.preventDefault();
-    //       // that.audio.muted = false;
-    //     });
-    //   });
-    // },
-    controlVolume(){
-      let audio = document.querySelector('audio');
-      if(audio){
+    dragBar: function(audio, el, site) {
+      audio, el, site;
+    },
+    controlVolume() {
+      let audio = document.querySelector("audio");
+      if (audio) {
         audio.muted = !audio.muted;
       }
     },
@@ -113,6 +129,8 @@ export default {
       if (cachedLyric) {
         this.currentLyric = cachedLyric;
       } else {
+        console.log("get");
+
         window.axios
           .get("lyric", {
             params: {
@@ -129,6 +147,35 @@ export default {
             );
           });
       }
+    },
+    playWay() {},
+    lastSong() {
+       this.$parent.songIndex--;
+        if (this.$parent.songIndex <= 0 ) {
+            this.$parent.songIndex = this.$parent.newSongsData.length;
+            console.log(this.$parent.songIndex);
+            
+        }
+        this.$parent.$parent.getCurrentSongUrl(this.$parent.newSongsData[this.$parent.songIndex]).getCurrentSongUrl(this.$parent.newSongsData[this.$parent.songIndex]);
+    },
+
+    playState() {
+      this.$parent.changePlayStatus();
+    },
+
+    nextSong() {
+        this.$parent.songIndex++;
+        if (this.$parent.songIndex >= this.$parent.newSongsData.length) {
+
+          
+            this.$parent.songIndex = 0;
+            console.log(this.$parent.songIndex);
+        }
+        this.$parent.$parent.getCurrentSongUrl(this.$parent.newSongsData[this.$parent.songIndex]);
+    },
+    showList() {
+      this.showPlayList = !this.showPlayList;
+      this.$emit('trans-list-state',this.showPlayList);
     }
   },
   computed: {
@@ -162,12 +209,125 @@ export default {
     }
   },
   mounted() {
+    if(this.show){
     document.body.style.overflow = "hidden"; //禁止滚动
+    }else{
+          document.body.style.overflow = ""; //禁止滚动
+    }
+
 
     let audio = this.$parent.$el.querySelector("audio");
-
+    let dragPoint = this.$el.getElementsByClassName("dragPoint");
+    // let processDragPoint = this.$el.querySelector(".process");
+    let site = this.$el.getElementsByClassName("control-bar");
+    let progress = this.$el.getElementsByClassName("progress");
     this.$el.style.height = "100vh";
-    console.log("kk", audio);
+    console.log(dragPoint, progress, site);
+    // this.dragBar(audio,dragPoint,site);
+
+    // 音量控制
+    // 点击
+    site[0].onmousedown = function(e) {
+      let ev = window.event || e;
+      if (ev.button == 0) {
+        let bili = site[0].offsetWidth / 100;
+
+        let k = (ev.pageX - site[0].offsetLeft) / bili / 100;
+        let t = k * 100 * bili - dragPoint[0].offsetWidth / 2;
+        if (k <= 1 && k >= 0) {
+          audio.volume = k;
+          progress[0].style.width = k * 100 * bili + "px";
+          dragPoint[0].style.left = t + "px";
+        }
+      }
+    };
+    //拖拽
+    dragPoint[0].addEventListener("touchstart", function(e) {
+      let ev = e || window.event;
+      console.log(ev, "拖拽开始");
+
+      dragPoint[0].addEventListener("touchmove", function(e) {
+        let ev = e || window.event;
+        let touch = ev.targetTouches[0];
+
+        e.preventDefault();
+
+        let bili = site[0].offsetWidth / 100;
+
+        let k = (touch.pageX - site[0].offsetLeft) / bili / 100;
+        let t = k * 100 * bili - dragPoint[0].offsetWidth / 2;
+        if (k <= 1 && k >= 0) {
+          audio.volume = k;
+          progress[0].style.width = k * 100 * bili + "px";
+          dragPoint[0].style.left = t + "px";
+        }
+
+        // console.log(((touch.pageX - site[0].offsetLeft) /(site[0].offsetWidth/100))/100);
+        // that.audio.muted = true;
+        // let bili = this.site.offsetWidth / 100;
+        // this.dragPoint.style.left = time - this.dragPoint.offsetWidth / 2 + 'px';
+      });
+      dragPoint[1].addEventListener("touchend", function(e) {
+        let ev = e || window.event;
+        e.preventDefault();
+        // that.audio.muted = false;
+      });
+    });
+    // 播放进度控制
+    // 点击
+    site[1].onmousedown = function(e) {
+      let ev = window.event || e;
+      console.log("click");
+      if (ev.button == 0) {
+        audio.currentTime =
+          ((ev.pageX - site[1].offsetParent.offsetLeft - site[1].offsetLeft) /
+            site[1].offsetWidth) *
+          audio.duration;
+
+        // audio.currentTime =
+        //   ((ev.pageX - site[1].offsetParent.offsetLeft - site[1].offsetLeft) /
+        //     site[1].offsetWidth) *
+        //   audio.duration;
+        let bili = site[1].offsetWidth / 100;
+
+        let time = (audio.currentTime / audio.duration) * 100 * bili;
+        progress[1].style.width = time + "px";
+        dragPoint[1].style.left = time - dragPoint[1].offsetWidth / 2 + "px";
+      }
+      // ev.button == 0 ? that.jump(ev) : ev;
+    };
+    // 拖拽
+    dragPoint[1].addEventListener("touchstart", function(e) {
+      let ev = e || window.event;
+
+      dragPoint[1].addEventListener("touchmove", function(e) {
+        let ev = e || window.event;
+        let touch = ev.targetTouches[0];
+        // console.log(ev);
+        // dragPoint[1].style.width = 15 +'px';
+        dragPoint[1].style.transform = "scale(1.3)";
+        // audio.currentTime =
+        e.preventDefault();
+        console.log(touch);
+        audio.currentTime =
+          ((touch.pageX -
+            site[1].offsetParent.offsetLeft -
+            site[1].offsetLeft) /
+            site[1].offsetWidth) *
+          audio.duration;
+
+        audio.muted = true;
+        // let bili = this.site.offsetWidth / 100;
+        // this.dragPoint.style.left = time - this.dragPoint.offsetWidth / 2 + 'px';
+      });
+      dragPoint[1].addEventListener("touchend", function(e) {
+        let ev = e || window.event;
+        dragPoint[1].style.transform = "scale(1)";
+        e.preventDefault();
+        audio.muted = false;
+      });
+    });
+
     // document.addEventListener
     audio.addEventListener("timeupdate", () => {
       if (this.parsedLyric) {
@@ -183,6 +343,51 @@ export default {
         }
         this.currentLyricIndex = index;
       }
+
+      let bili = site[1].offsetWidth / 100;
+
+      let time = (audio.currentTime / audio.duration) * 100 * bili;
+      progress[1].style.width = time + "px";
+      let t = time - dragPoint[1].offsetWidth / 2;
+      // console.log(time, t);
+
+      dragPoint[1].style.left = t + "px";
+
+      let currentMinute = Math.floor(audio.currentTime / 60);
+      let currentSecond = Math.floor(audio.currentTime % 60);
+      Math.floor(audio.currentTime / 60) < 10
+        ? (currentMinute = "0" + currentMinute)
+        : (currentMinute = currentMinute);
+      Math.floor(audio.currentTime % 60) < 10
+        ? (currentSecond = "0" + currentSecond)
+        : (currentSecond = currentSecond);
+
+      let songMinute = Math.floor(audio.duration / 60);
+      let songSecond = Math.floor(audio.duration % 60);
+      Math.floor(audio.duration / 60) < 10
+        ? (songMinute = "0" + songMinute)
+        : (songMinute = songMinute);
+      Math.floor(audio.duration % 60) < 10
+        ? (songSecond = "0" + songSecond)
+        : (songSecond = songSecond);
+      this.$el.querySelector(
+        ".currentProgress"
+      ).innerHTML = `${currentMinute}:${currentSecond}`;
+
+      if (audio.paused) {
+        this.progressBarData = {
+          currentMinute,
+          currentSecond,
+          songMinute,
+          songSecond,
+          time,
+          t
+        };
+      }
+
+      this.$el.querySelector(
+        ".totalProgress"
+      ).innerHTML = `${songMinute}:${songSecond}`;
     });
   },
   created() {
@@ -194,6 +399,50 @@ export default {
         document.body.style.overflow = "hidden"; //禁止滚动
       } else {
         document.body.style.overflow = "";
+      }
+
+      let audio = this.$parent.$el.querySelector("audio");
+      let dragPoint = this.$el.getElementsByClassName("dragPoint");
+      // let processDragPoint = this.$el.querySelector(".process");
+      let site = this.$el.getElementsByClassName("control-bar");
+      let progress = this.$el.getElementsByClassName("progress");
+
+      let bili = site[1].offsetWidth / 100;
+      let time = (audio.currentTime / audio.duration) * 100 * bili;
+
+      progress[1].style.width = time + "px";
+      let t = time - dragPoint[1].offsetWidth / 2;
+      // console.log(time, t);
+
+      dragPoint[1].style.left = t + "px";
+    },
+    lyric: function(value) {
+      let audio = this.$parent.$el.querySelector("audio");
+      let site = this.$el.getElementsByClassName("control-bar");
+      let dragPoint = this.$el.getElementsByClassName("dragPoint");
+      let progress = this.$el.getElementsByClassName("progress");
+      audio.volume = 0.5;
+      console.log(
+        site[0].offsetWidth / 2,
+        site[0].offsetWidth / 2 - dragPoint[0].offsetWidth / 2
+      );
+      progress[0].style.width = site[0].offsetWidth / 2 + "px";
+      dragPoint[0].style.left =
+        site[0].offsetWidth / 2 - dragPoint[0].offsetWidth / 2 + "px";
+    },
+    currentSong: function(value) {
+      this.getLyric();
+    },
+        showPlayList: function(value) {
+      value;
+      if (this.showPlayList) {
+        console.log('xxx');
+        
+        document.body.style.overflow = "hidden";
+      } else {
+        console.log('ggg');
+        
+        document.body.style.overflow = "hidden";
       }
     }
   }
@@ -234,40 +483,6 @@ export default {
       i {
         font-size: 14px;
         margin-right: 10px;
-      }
-      .control-bar {
-        margin: auto;
-        width: 95%;
-        height: 3px;
-        background: -webkit-linear-gradient(
-              rgba(250, 240, 230, 0.2),
-              rgba(250, 240, 230, 0.2)
-            )
-            no-repeat,
-          rgba(0, 0, 0, 0.2);
-        position: relative;
-        .progress {
-          height: 100%;
-          position: absolute;
-          top: 0px;
-          opacity: 0.6;
-          display: inline-block;
-          background-color: white;
-        }
-        .dragPoint {
-          position: absolute;
-          top: 0;
-          left: -5px;
-          bottom: 0;
-          margin: auto;
-          display: inline-block;
-          width: 10px;
-          height: 10px;
-          border-radius: 50%;
-          z-index: 100;
-          background-color: white;
-          opacity: 1;
-        }
       }
     }
 
@@ -363,13 +578,84 @@ export default {
     }
   }
 }
-
+footer {
+  width: 100%;
+  .k-bar {
+    display: flex;
+    justify-content: space-between;
+    position: absolute;
+    left: 2.5vw;
+    bottom: 11vh;
+    // left: 7.5%;
+    width: 95vw;
+    .progress-bar {
+      width: 80vw;
+      display: flex;
+    }
+    span {
+      color: white;
+      font-size: 12px;
+    }
+  }
+  .play-control {
+    width: 85%;
+    left: 7.5%;
+    display: flex;
+    justify-content: space-between;
+    position: absolute;
+    bottom: 2vh;
+    .con {
+      margin: auto;
+      width: 26px;
+      height: 26px;
+    }
+    .ppp {
+      width: 54px;
+      height: 54px;
+    }
+  }
+}
 .rotate {
   transform: rotate(0deg);
   animation: rotate 10s linear infinite;
   animation-play-state: paused;
   &.active {
     animation-play-state: running;
+  }
+}
+//控制条
+.control-bar {
+  margin: auto;
+  width: 95%;
+  height: 3px;
+  background: -webkit-linear-gradient(
+        rgba(250, 240, 230, 0.2),
+        rgba(250, 240, 230, 0.2)
+      )
+      no-repeat,
+    rgba(0, 0, 0, 0.2);
+  position: relative;
+  .progress {
+    height: 100%;
+    position: absolute;
+    top: 0px;
+    opacity: 0.6;
+    display: inline-block;
+    background-color: white;
+  }
+  .dragPoint {
+    position: absolute;
+    top: 0;
+    left: -5px;
+    bottom: 0;
+    margin: auto;
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    z-index: 100;
+    background-color: white;
+    opacity: 1;
   }
 }
 </style>

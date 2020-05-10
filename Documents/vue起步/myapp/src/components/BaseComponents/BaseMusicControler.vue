@@ -26,7 +26,7 @@
       enter-active-class="animated fadeInUp"
       leave-active-class="animated fadeOutDown"
     >
-      <div class="mask" v-if="showPlayList" @touchstart="showPlayList=!showPlayList"></div>
+      <div class="mask" v-show="showPlayList" @touchstart="showPlayList=!showPlayList"></div>
     </transition>
 
     <transition
@@ -40,6 +40,7 @@
         :currentSongInfo="songInfo"
         @tran-song-id="$parent.getCurrentSongUrl($event)"
         @change-play-way="playWay = $event"
+        :showPlayList="showPlayList"
       ></CurrentPlayList>
     </transition>
 
@@ -49,7 +50,7 @@
       leave-active-class="animated fadeOutDown"
     >
       <BaseMusicPlayer
-        v-if="show"
+        v-show="show"
         :currentSong="songInfo"
         :imgUrl="imgUrl(songInfo)"
         :songName="songName(songInfo)"
@@ -57,6 +58,8 @@
         :show="show"
         :isPlay="isPlay"
         @close="closeWindow($event)"
+        @trans-list-state="showPlayList = $event"
+        :showPlayList="showPlayList"
       ></BaseMusicPlayer>
     </transition>
   </div>
@@ -98,7 +101,7 @@ export default {
       if (songInfo.song) {
         return this.songInfo.song.name;
       } else if (songInfo.al) {
-        return songInfo.al.name;
+        return songInfo.name;
       } else if (songInfo) {
         return songInfo.name;
       }
@@ -155,7 +158,7 @@ export default {
       }
       audio.ontimeupdate = function() {
         let currentProgress = ((this.currentTime / this.duration) * 100) / 50;
-        console.log(currentProgress);
+        // console.log(currentProgress);
 
         context.clearRect(0, 0, 26, 26);
         //绘制播放按钮外圈样式
@@ -195,6 +198,7 @@ export default {
               break;
             case 2:
               that.songIndex;
+              audio.play();
               break;
             case 3:
               that.songIndex = Math.floor(
@@ -206,7 +210,6 @@ export default {
           console.log(that.songIndex);
 
           that.$parent.getCurrentSongUrl(that.newSongsData[that.songIndex]);
-          audio.play();
         }
       };
     }
@@ -260,6 +263,7 @@ export default {
     width: 100vw;
     height: 100vh;
     position: fixed;
+    z-index: 99999;
     top: 0;
   }
 

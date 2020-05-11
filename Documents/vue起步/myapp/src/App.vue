@@ -20,6 +20,8 @@
       :songUrl="currentSongUrl"
       :songInfo="currentSongInfo"
       :newSongsData="newSongsData"
+      :songIndex="songIndex"
+      @trans-song-index="songIndex=$event"
     ></BaseMusicControler>
   </div>
 </template>
@@ -29,7 +31,8 @@ export default {
     return {
       currentSongInfo: "",
       currentSongUrl: "",
-      newSongsData: []
+      newSongsData: [],
+      songIndex: ""
     };
   },
   methods: {
@@ -43,12 +46,29 @@ export default {
     window.onload = function() {
       console.log("应用创建");
     };
-    
   },
   created() {
     // console.log(this.currentSongId);
   },
-
+  watch: {
+    currentSongInfo: function(value) {
+      console.log(this.currentSongInfo);
+      
+      if (value) {
+        this.newSongsData.forEach((item, index)=> {
+          if (this.currentSongInfo == item) {
+            console.log(index);
+            // this.currentSongInfo =
+            this.songIndex = index;
+          }
+        });
+      }
+      console.log(value);
+    },
+    songIndex:function(value){
+      this.getCurrentSongUrl(this.newSongsData[value]);
+    }
+  }
 };
 </script>
 <style lang="less">

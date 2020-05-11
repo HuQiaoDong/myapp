@@ -41,6 +41,7 @@
         @tran-song-id="$parent.getCurrentSongUrl($event)"
         @change-play-way="playWay = $event"
         :showPlayList="showPlayList"
+        :playWay="playWay"
       ></CurrentPlayList>
     </transition>
 
@@ -60,6 +61,11 @@
         @close="closeWindow($event)"
         @trans-list-state="showPlayList = $event"
         :showPlayList="showPlayList"
+        @change-play-way="playWay = $event"
+        :playWay="playWay"
+        :songIndex="songIndex"
+        @trans-song-index="c_SongIndex = $event"
+        :newSongsData="newSongsData"
       ></BaseMusicPlayer>
     </transition>
   </div>
@@ -69,20 +75,20 @@
 import CurrentPlayList from "../CurrentPlayList";
 export default {
   // name: BaseMusicPlayer
-  props: ["songUrl", "songInfo", "newSongsData"],
+  props: ["songUrl", "songInfo", "newSongsData", "songIndex"],
   created() {},
   components: {
     CurrentPlayList
   },
   data() {
     return {
+      c_SongIndex: this.songIndex,
       playWay: 1,
       isPlay: false,
       show: false,
-      songIndex: "",
       showPlayList: false,
       defalutPic: "../../assets/defaultImg.png",
-      currentSongInfo: this.songInfo,
+      currentSongInfo: this.songInfo
     };
   },
   computed: {},
@@ -150,12 +156,12 @@ export default {
         audio.play();
         that.isPlay = true;
       };
-      audio.onplay=function(){
+      audio.onplay = function() {
         that.isPlay = true;
-      }
-      audio.onpause=function(){
+      };
+      audio.onpause = function() {
         that.isPlay = false;
-      }
+      };
       audio.ontimeupdate = function() {
         let currentProgress = ((this.currentTime / this.duration) * 100) / 50;
         // console.log(currentProgress);
@@ -182,34 +188,37 @@ export default {
 
         // }
         if (audio.ended) {
-          that.newSongsData.forEach(function(item, index) {
-            if (that.songInfo == item) {
-              console.log(index);
-              // this.currentSongInfo =
-              that.songIndex = index;
-            }
-          });
+          // that.newSongsData.forEach(function(item, index) {
+          //   if (that.songInfo == item) {
+          //     console.log(index);
+          //     // this.currentSongInfo =
+          //     that.songIndex = index;
+          //   }
+          // });
           switch (that.playWay) {
             case 1:
-              that.songIndex++;
-              if (that.songIndex >= that.newSongsData.length) {
-                that.songIndex = 0;
+              if (that.c_SongIndex >= that.newSongsData.length - 1) {
+                that.c_SongIndex = 0;
+              } else {
+                that.c_SongIndex++;
               }
+              that.$emit('tran-song-index',that.c_SongIndex)
               break;
             case 2:
-              that.songIndex;
+              that.c_SongIndex;
               audio.play();
               break;
             case 3:
-              that.songIndex = Math.floor(
+              that.c_SongIndex = Math.floor(
                 Math.random() * that.newSongsData.length
               );
+              that.$emit('tran-song-index',that.c_SongIndex)
               break;
           }
 
-          console.log(that.songIndex);
+          console.log(that.c_SongIndex);
 
-          that.$parent.getCurrentSongUrl(that.newSongsData[that.songIndex]);
+          // that.$parent.getCurrentSongUrl(that.newSongsData[that.songIndex]);
         }
       };
     }
@@ -225,7 +234,14 @@ export default {
       } else {
         document.body.style.overflowY = "";
       }
-    }
+    },
+    c_SongIndex: function(value) {
+      this.$emit("trans-song-index", value);
+    },
+    songIndex:function(value){
+      this.c_SongIndex = value;
+    },
+
   }
 };
 </script>

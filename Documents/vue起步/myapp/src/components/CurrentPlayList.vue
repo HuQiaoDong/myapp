@@ -30,12 +30,12 @@
 // import NewSongItem from "../components/NewSongItem";
 export default {
   name: "CurrentPlayList",
-  props: ["newSongsData", "currentSongInfo"],
+  props: ["newSongsData", "currentSongInfo","playWay"],
   data() {
     return {
       playList: this.newSongsData,
       songIndex: "",
-      playWay: 1,
+      l_PlayWay: 1,
       playWayIcon: require("../assets/order.svg"),
       playWayText: "列表循环"
     };
@@ -45,12 +45,12 @@ export default {
   },
   methods: {
     switchPlayWay() {
-      if (this.playWay >= 3) {
-        this.playWay = 1;
+      if (this.l_PlayWay >= 3) {
+        this.l_PlayWay = 1;
       } else {
-        this.playWay++;
+        this.l_PlayWay++;
       }
-      switch (this.playWay) {
+      switch (this.l_PlayWay) {
         case 1:
           this.playWayIcon = require("../assets/order.svg");
           this.playWayText = "列表循环";
@@ -67,7 +67,7 @@ export default {
         default:
           break;
       }
-      this.$emit("change-play-way", this.playWay);
+      this.$emit("change-play-way", this.l_PlayWay);
     },
     getArticleInfo(songItem) {
       if (songItem.song) {
@@ -87,7 +87,28 @@ export default {
   watch: {
     currentSongInfo: function(value) {
       console.log("当前歌曲", value);
+    },
+    playWay: function(value) {
+      this.l_PlayWay = value;
+      switch (this.l_PlayWay) {
+        case 1:
+          this.playWayIcon = require("../assets/order.svg");
+          this.playWayText = "列表循环";
+          break;
+        case 2:
+          this.playWayIcon = require("../assets/loop.svg");
+          this.playWayText = "单曲循环";
+          break;
+        case 3:
+          this.playWayIcon = require("../assets/random.svg");
+          this.playWayText = "随机播放";
+          break;
+
+        default:
+          break;
+      }
     }
+
   },
   mounted() {
     // let audio = document.querySelector("audio");
@@ -111,7 +132,7 @@ export default {
   padding: 20px 20px 0px;
 
   header {
-    .playway{
+    .playway {
       display: inline-block;
     }
     h3 {

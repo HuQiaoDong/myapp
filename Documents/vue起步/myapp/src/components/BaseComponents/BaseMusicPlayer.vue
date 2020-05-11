@@ -75,10 +75,10 @@
           >{{progressBarData ?`${progressBarData.songMinute}:${progressBarData.songSecond}`:"00:00"}}</span>
         </div>
         <div class="play-control">
-          <img src="../../assets/order2.svg" alt class="con" @click="playWay" />
+          <img :src="playWayIcon" alt class="con" @click="changePlayWay" />
           <img src="../../assets/prev.svg" alt class="con" @click="lastSong" />
-          <img src="../../assets/stop2.svg" v-if="isPlay" alt class="ppp" @click="playState()"/>
-          <img src="../../assets/play2.svg" v-else alt class="ppp" @click="playState()"/>
+          <img src="../../assets/stop2.svg" v-if="isPlay" alt class="ppp" @click="playState()" />
+          <img src="../../assets/play2.svg" v-else alt class="ppp" @click="playState()" />
           <img src="../../assets/next.svg" alt class="con" @click="nextSong" />
           <img src="../../assets/PlayList2.svg" alt class="con" @click="showList" />
         </div>
@@ -97,14 +97,29 @@ export default {
   data() {
     return {
       //   show:this.show,
-      playerShow: "",
+      playWayIcon:require("../../assets/order2.svg"),
+      p_ShowPlayList: this.showPlayList,
       lyric: false,
       currentLyric: null,
       currentLyricIndex: "",
-      progressBarData: null
+      progressBarData: null,
+      p_PlayWay:1,
+      p_SongIndex:this.songIndex,
+      // p_SongIndex: this.songIndex
     };
   },
-  props: ["currentSong", "show", "imgUrl", "songName", "songAuthor", "isPlay","showPlayList"],
+  props: [
+    "currentSong",
+    "show",
+    "imgUrl",
+    "songName",
+    "songAuthor",
+    "isPlay",
+    "showPlayList",
+    "playWay",
+    "songIndex",
+    "newSongsData"
+  ],
   methods: {
     dragBar: function(audio, el, site) {
       audio, el, site;
@@ -148,15 +163,37 @@ export default {
           });
       }
     },
-    playWay() {},
+    changePlayWay() {
+      if (this.p_PlayWay >= 3) {
+        this.p_PlayWay = 1;
+      } else {
+        this.p_PlayWay++;
+      }
+      switch (this.p_PlayWay) {
+        case 1:
+          this.playWayIcon = require("../../assets/order2.svg");
+          break;
+        case 2:
+          this.playWayIcon = require("../../assets/loop2.svg");
+          break;
+        case 3:
+          this.playWayIcon = require("../../assets/random2.svg");
+          break;
+
+        default:
+          break;
+      }
+      this.$emit('change-play-way',this.p_PlayWay);
+    },
     lastSong() {
-       this.$parent.songIndex--;
-        if (this.$parent.songIndex <= 0 ) {
-            this.$parent.songIndex = this.$parent.newSongsData.length;
-            console.log(this.$parent.songIndex);
-            
-        }
-        this.$parent.$parent.getCurrentSongUrl(this.$parent.newSongsData[this.$parent.songIndex]).getCurrentSongUrl(this.$parent.newSongsData[this.$parent.songIndex]);
+
+      if (this.p_SongIndex <= 0) {
+        this.p_SongIndex = this.newSongsData.length -1;
+      }
+      else{
+        this.p_SongIndex--;
+      }
+      this.$emit("trans-song-index", this.p_SongIndex);
     },
 
     playState() {
@@ -164,18 +201,18 @@ export default {
     },
 
     nextSong() {
-        this.$parent.songIndex++;
-        if (this.$parent.songIndex >= this.$parent.newSongsData.length) {
+      // console.log(this.$root.$children[0]);
 
-          
-            this.$parent.songIndex = 0;
-            console.log(this.$parent.songIndex);
-        }
-        this.$parent.$parent.getCurrentSongUrl(this.$parent.newSongsData[this.$parent.songIndex]);
+      if (this.p_SongIndex >= this.newSongsData.length-1) {
+        this.p_SongIndex = 0;
+      }else{
+        this.p_SongIndex++;
+      }
+      this.$emit("trans-song-index", this.p_SongIndex);
     },
     showList() {
-      this.showPlayList = !this.showPlayList;
-      this.$emit('trans-list-state',this.showPlayList);
+      this.p_ShowPlayList = !this.p_ShowPlayList;
+      this.$emit("trans-list-state", this.p_ShowPlayList);
     }
   },
   computed: {
@@ -206,15 +243,14 @@ export default {
       } else {
         return null;
       }
-    }
+    },
   },
   mounted() {
-    if(this.show){
-    document.body.style.overflow = "hidden"; //禁止滚动
-    }else{
-          document.body.style.overflow = ""; //禁止滚动
+    if (this.show) {
+      document.body.style.overflow = "hidden"; //禁止滚动
+    } else {
+      document.body.style.overflow = ""; //禁止滚动
     }
-
 
     let audio = this.$parent.$el.querySelector("audio");
     let dragPoint = this.$el.getElementsByClassName("dragPoint");
@@ -433,17 +469,41 @@ export default {
     currentSong: function(value) {
       this.getLyric();
     },
-        showPlayList: function(value) {
+    showPlayList: function(value) {
       value;
       if (this.showPlayList) {
-        console.log('xxx');
-        
+        console.log("xxx");
+
         document.body.style.overflow = "hidden";
       } else {
-        console.log('ggg');
-        
+        console.log("ggg");
+
         document.body.style.overflow = "hidden";
       }
+    },
+    songIndex:function(value){
+       this.p_SongIndex=value
+    },
+    // playWay:function(){
+    //   this.changePlayWay();
+    // }
+    playWay:function(value){
+      this.p_PlayWay = value;
+      switch (this.p_PlayWay) {
+        case 1:
+          this.playWayIcon = require("../../assets/order2.svg");
+          break;
+        case 2:
+          this.playWayIcon = require("../../assets/loop2.svg");
+          break;
+        case 3:
+          this.playWayIcon = require("../../assets/random2.svg");
+          break;
+
+        default:
+          break;
+      }
+      this.$emit('change-play-way',this.p_PlayWay);
     }
   }
 };

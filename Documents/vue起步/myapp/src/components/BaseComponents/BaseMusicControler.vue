@@ -35,7 +35,7 @@
       leave-active-class="animated fadeOutDown"
     >
       <CurrentPlayList
-        v-if="showPlayList"
+        v-show="showPlayList"
         :newSongsData="newSongsData"
         :currentSongInfo="songInfo"
         @tran-song-id="$parent.getCurrentSongUrl($event)"

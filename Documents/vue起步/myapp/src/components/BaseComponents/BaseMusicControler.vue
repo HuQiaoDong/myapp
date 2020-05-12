@@ -20,7 +20,7 @@
       <img v-else src="../../assets/play.svg" alt />
       <img src="../../assets/PlayList.svg" alt @click="showPlayList = !showPlayList" />
     </div>
-    <audio :src="songUrl" controls></audio>
+    <audio :src="songUrl" controls style="display:none"></audio>
     <transition
       name="custom-classes-transition"
       enter-active-class="animated fadeInUp"
@@ -35,7 +35,7 @@
       leave-active-class="animated fadeOutDown"
     >
       <CurrentPlayList
-        v-show="showPlayList"
+        v-if="showPlayList"
         :newSongsData="newSongsData"
         :currentSongInfo="songInfo"
         @tran-song-id="$parent.getCurrentSongUrl($event)"
@@ -82,6 +82,7 @@ export default {
   },
   data() {
     return {
+      scroll: false,
       c_SongIndex: this.songIndex,
       playWay: 1,
       isPlay: false,
@@ -202,7 +203,7 @@ export default {
               } else {
                 that.c_SongIndex++;
               }
-              that.$emit('tran-song-index',that.c_SongIndex)
+              that.$emit("tran-song-index", that.c_SongIndex);
               break;
             case 2:
               that.c_SongIndex;
@@ -212,7 +213,7 @@ export default {
               that.c_SongIndex = Math.floor(
                 Math.random() * that.newSongsData.length
               );
-              that.$emit('tran-song-index',that.c_SongIndex)
+              that.$emit("tran-song-index", that.c_SongIndex);
               break;
           }
 
@@ -230,17 +231,21 @@ export default {
     showPlayList: function(value) {
       value;
       if (this.showPlayList) {
-        document.body.style.overflowY = "hidden";
+        document.body.style.overflow = "hidden";
       } else {
-        document.body.style.overflowY = "";
+        document.body.style.overflow = "";
+        // document.body.style.overflowY = "";
       }
     },
     c_SongIndex: function(value) {
       this.$emit("trans-song-index", value);
     },
-    songIndex:function(value){
+    songIndex: function(value) {
       this.c_SongIndex = value;
     },
+    show:function(){
+      document.body.style.overflow = "";
+    }
 
   }
 };

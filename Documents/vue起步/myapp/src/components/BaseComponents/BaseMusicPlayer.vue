@@ -89,11 +89,7 @@
 
 <script>
 export default {
-  // mounted() {
-  //   document.body.style.overflow = "hidden"; //禁止滚动
-  //   // console.log(window.innerHeight, this.$el)
-  //   this.$el.style.height = window.innerHeight + "px";
-  // },
+
   data() {
     return {
       //   show:this.show,
@@ -102,7 +98,7 @@ export default {
       lyric: false,
       currentLyric: null,
       currentLyricIndex: "",
-      progressBarData: null,
+      progressBarData: "",
       p_PlayWay:1,
       p_SongIndex:this.songIndex,
       // p_SongIndex: this.songIndex
@@ -121,9 +117,6 @@ export default {
     "newSongsData"
   ],
   methods: {
-    dragBar: function(audio, el, site) {
-      audio, el, site;
-    },
     controlVolume() {
       let audio = document.querySelector("audio");
       if (audio) {
@@ -201,8 +194,6 @@ export default {
     },
 
     nextSong() {
-      // console.log(this.$root.$children[0]);
-
       if (this.p_SongIndex >= this.newSongsData.length-1) {
         this.p_SongIndex = 0;
       }else{
@@ -219,7 +210,6 @@ export default {
     parsedLyric: function() {
       if (this.currentLyric) {
         return this.currentLyric.split("\n").map(item => {
-          // console.log(item);
           var regex = /\d{2}:\d{2}\.\d+/i;
           if (item.search(regex) !== -1) {
             var time = item.match(regex)[0];
@@ -471,11 +461,11 @@ export default {
     },
     showPlayList: function(value) {
       value;
-      if (this.showPlayList) {
+      this.$emit('trans-list-state',this.showPlayList);
+      if (this.showPlayList && this.show) {
         console.log("xxx");
-
         document.body.style.overflow = "hidden";
-      } else {
+      } else if(!this.showPlayList && this.show){
         console.log("ggg");
 
         document.body.style.overflow = "hidden";
@@ -555,8 +545,9 @@ export default {
         transition: transform 0.3s;
       }
       .lyricRow {
-        height: 28px;
-        line-height: 28px;
+        // height: 28px;
+        padding: 14px 14px;
+        // line-height: 28px;
         text-align: center;
         &.active {
           color: white;

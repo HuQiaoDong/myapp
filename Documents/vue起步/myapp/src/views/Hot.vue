@@ -1,5 +1,5 @@
 <template>
-  <div class="hot">
+  <div class="hot" :class="[currentSongInfo ?'margin-bottom-40px':'']">
     <BaseHomeLink></BaseHomeLink>
     <div class="title-img">
       <img src="../assets/hot_music_bg_2x.jpg" alt />
@@ -211,5 +211,8 @@ export default {
     margin: auto;
     padding: 0 10px;
   }
+}
+.margin-bottom-40px{
+  margin-bottom: 40px;
 }
 </style>

@@ -295,7 +295,7 @@ export default {
     top: -100px;
   }
   .info-scope {
-    width: 82%;
+    width: 78%;
     display: flex;
     margin-left: 3px;
     img {
@@ -321,7 +321,7 @@ export default {
     justify-content: space-between;
     padding: 5px 0px;
     position: relative;
-    width: 50px;
+    width: 60px;
     canvas {
       transform: rotate(-90deg);
       // z-index: 999;

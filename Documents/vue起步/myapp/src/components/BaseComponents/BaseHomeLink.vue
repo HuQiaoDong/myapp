@@ -1,13 +1,13 @@
 <template>
   <ul id="nav">
     <li>
-      <router-link to="/">推荐音乐</router-link>
+      <router-link to="/" class="nav">推荐音乐</router-link>
     </li>
     <li>
-      <router-link to="/hot">热歌榜</router-link>
+      <router-link to="/hot" class="nav">热歌榜</router-link>
     </li>
     <li>
-      <router-link to="/search">搜索</router-link>
+      <router-link to="/search" class="nav">搜索</router-link>
     </li>
     <!-- 一级路由出口 -->
   </ul>

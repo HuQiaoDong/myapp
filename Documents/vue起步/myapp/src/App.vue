@@ -90,9 +90,11 @@ export default {
     text-align: center;
   }
   a {
-    font-weight: bold;
+    padding: 0 3px;
+    font-weight: normal;
     text-decoration: none;
-    color: #2c3e50;
+    color: #333333;
+    font-size: 15px;
     padding-bottom: 10px;
 
     // line-height: 40px;

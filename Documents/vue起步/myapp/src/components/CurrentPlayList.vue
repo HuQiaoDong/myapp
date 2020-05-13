@@ -13,14 +13,17 @@
 
     <ul class="playlist">
       <li v-for="(item,index) in newSongsData" :key="index">
+        <span class="fa fa-volume-up" v-show="currentSongInfo.id == item.id" style="color:red;"></span>
         <div class="songInfo" @click="playIndex(item,index)">
+  
           <span
             :class="currentSongInfo.id == item.id ? 'playing': ''"
           >{{item.name || item.song.name|| item.al.name}}</span>
           <span :class="currentSongInfo.id == item.id ? 'playing' : ''">-{{getArticleInfo(item)}}</span>
         </div>
 
-        <em>x</em>
+        <!-- <em>x</em> -->
+        <img src="../assets/error.svg" alt />
       </li>
     </ul>
   </div>
@@ -30,7 +33,7 @@
 // import NewSongItem from "../components/NewSongItem";
 export default {
   name: "CurrentPlayList",
-  props: ["newSongsData", "currentSongInfo","playWay"],
+  props: ["newSongsData", "currentSongInfo", "playWay"],
   data() {
     return {
       playList: this.newSongsData,
@@ -108,7 +111,6 @@ export default {
           break;
       }
     }
-
   },
   mounted() {
     // let audio = document.querySelector("audio");
@@ -170,6 +172,12 @@ export default {
       justify-content: space-between;
       height: 50px;
       line-height: 50px;
+      .fa-volume-up{
+        height: 50px;
+        line-height: 50px;
+        padding-right: 8px;
+        font-size: 17px;
+      }
       .songInfo {
         text-overflow: ellipsis;
         white-space: nowrap;

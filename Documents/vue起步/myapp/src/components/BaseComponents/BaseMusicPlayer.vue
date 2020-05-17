@@ -40,7 +40,7 @@
             </div>
           </div>
           <div class="wrap" @click="lyric=!lyric">
-            <ul :style="{transform: `translateY(${-currentLyricIndex * 28}px)`}" class="scroll">
+            <ul :style="{transform: `translateY(${-currentLyricIndex * 50}px)`}" class="scroll">
               <li
                 v-for="(row,index) in parsedLyric"
                 :key="index"
@@ -241,7 +241,6 @@ export default {
     } else {
       document.body.style.overflow = ""; //禁止滚动
     }
-
     let audio = this.$parent.$el.querySelector("audio");
     let dragPoint = this.$el.getElementsByClassName("dragPoint");
     // let processDragPoint = this.$el.querySelector(".process");
@@ -250,7 +249,8 @@ export default {
     this.$el.style.height = "100vh";
     console.log(dragPoint, progress, site);
     // this.dragBar(audio,dragPoint,site);
-
+    progress[0].style.width = '100%';
+    dragPoint[0].style.left = '99%';
     // 音量控制
     // 点击
     site[0].onmousedown = function(e) {
@@ -447,14 +447,13 @@ export default {
       let site = this.$el.getElementsByClassName("control-bar");
       let dragPoint = this.$el.getElementsByClassName("dragPoint");
       let progress = this.$el.getElementsByClassName("progress");
-      audio.volume = 0.5;
-      console.log(
-        site[0].offsetWidth / 2,
-        site[0].offsetWidth / 2 - dragPoint[0].offsetWidth / 2
-      );
-      progress[0].style.width = site[0].offsetWidth / 2 + "px";
-      dragPoint[0].style.left =
-        site[0].offsetWidth / 2 - dragPoint[0].offsetWidth / 2 + "px";
+      // console.log(
+      //   site[0].offsetWidth / 2,
+      //   site[0].offsetWidth / 2 - dragPoint[0].offsetWidth / 2
+      // );
+      // progress[0].style.width = site[0].offsetWidth / 2 + "px";
+      // dragPoint[0].style.left =
+      //   site[0].offsetWidth / 2 - dragPoint[0].offsetWidth / 2 + "px";
     },
     currentSong: function(value) {
       this.getLyric();
@@ -587,7 +586,7 @@ export default {
     height: 100%;
     position: fixed;
     top: 0;
-    background-color: rgba(100, 100, 100, 0.5);
+    background-color: rgba(100, 100, 100, 1);
     filter: blur(30px) brightness(0.5);
     transform: scale(2);
     width: inherit;

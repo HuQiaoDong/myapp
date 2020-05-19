@@ -10,11 +10,12 @@
     <div class="control">
       <canvas
         id="play-progress"
-        width="25.5"
-        height="25.5"
+        width="27"
+        height="27"
         @click="changePlayStatus"
-        :class="{border:!isPlay}"
       ></canvas>
+      <!-- :class="{border:!isPlay}" -->
+
       <img v-if="isPlay" src="../../assets/stop.svg" />
       <!-- <i class="fa fa-bars" aria-hidden="true" @click="showPlayList = true"></i> -->
       <img v-else src="../../assets/play.svg" alt />
@@ -138,6 +139,7 @@ export default {
       this.isPlay
         ? this.$el.querySelector("audio").play()
         : this.$el.querySelector("audio").pause();
+      console.log(this.isPlay);
     },
     closeWindow(event) {
       this.show = event;
@@ -166,22 +168,35 @@ export default {
       audio.ontimeupdate = function() {
         let currentProgress = ((this.currentTime / this.duration) * 100) / 50;
         // console.log(currentProgress);
+        context.clearRect(0, 0, 30, 30);
+        if (that.isPlay) {
+          //绘制播放按钮正在播放外圈样式
+          context.beginPath();
+          context.strokeStyle = "#888888";
+          context.lineWidth = 1;
+          // context.moveTo(0,0);
+          // context.lineTo(12.5,12.5);
+          context.arc(13.5, 13.5, 12.5, 0, 2 * Math.PI);
+          context.stroke();
+          context.closePath();
+        }
+        //绘制播放按钮暂停外圈样式
+        else if(!that.isPlay) {
+          context.beginPath();
+          context.strokeStyle = "#414141";
+          context.lineWidth = 1;
+          // context.moveTo(0,0);
+          // context.lineTo(12.5,12.5);
+          context.arc(13.5, 13.5, 12.5, 0, 2 * Math.PI);
+          context.stroke();
+          context.closePath();
+        }
 
-        context.clearRect(0, 0, 26, 26);
-        //绘制播放按钮外圈样式
-        // context.beginPath();
-        // context.strokeStyle = "#888888";
-        // context.lineWidth = 1;
-        // // context.moveTo(0,0);
-        // // context.lineTo(12.5,12.5);
-        // context.arc(12.5, 12.5, 12, 0, 2 * Math.PI);
-        // context.stroke();
-        // context.closePath();
         //绘制圆形进度条
         context.beginPath();
         context.strokeStyle = "#FF0000";
-        context.lineWidth = 1;
-        context.arc(12.5, 12.5, 12.3, 0, currentProgress * Math.PI);
+        context.lineWidth = 0.8;
+        context.arc(13.5, 13.5, 12.5, 0, currentProgress * Math.PI);
         context.stroke();
         context.closePath();
 
@@ -243,10 +258,9 @@ export default {
     songIndex: function(value) {
       this.c_SongIndex = value;
     },
-    show:function(){
+    show: function() {
       document.body.style.overflow = "";
     }
-
   }
 };
 </script>
@@ -328,7 +342,7 @@ export default {
       position: absolute;
       top: 2px;
       left: -8px;
-      border: 1px solid #aaaaaa;
+      // border: 1px solid #aaaaaa;
       box-sizing: border-box;
       border-radius: 50%;
     }

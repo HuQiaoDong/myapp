@@ -2,9 +2,9 @@
   <div class="hot" :class="[currentSongInfo ?'margin-bottom-40px':'']">
     <BaseHomeLink></BaseHomeLink>
     <div class="title-img">
-      <img src="../assets/hot_music_bg_2x.jpg" alt />
+      <img src="../assets/hot_music_bg_2x.jpg" alt class="topImg"/>
       <div class="hot-desc"></div>
-      <span></span>
+      <span>更新时间：5月28日</span>
     </div>
 
     <ul class="list">
@@ -108,6 +108,7 @@ export default {
   .title-img {
     position: relative;
     img {
+        filter: brightness(0.8);
     }
     .hot-desc {
       position: absolute;
@@ -117,6 +118,13 @@ export default {
       height: 67px;
       background: url(../assets/index_icon_2x.png) no-repeat -24px -30px;
       background-size: 166px 97px;
+    }
+    span{
+      color:white;
+      font-size: 12px;
+      bottom:35px;
+      left: 20px;
+      position: absolute;
     }
   }
 }
@@ -215,4 +223,5 @@ export default {
 .margin-bottom-40px{
   margin-bottom: 40px;
 }
+
 </style>

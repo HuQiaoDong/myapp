@@ -25,3 +25,6 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ### 推荐歌单
 (推荐歌单)[http://music.kele8.cn/personalized]
+
+//音乐是否可用
+https://music.kele8.cn/check/music?id=33894312

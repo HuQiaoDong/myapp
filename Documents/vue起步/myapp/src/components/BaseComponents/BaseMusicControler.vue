@@ -1,7 +1,7 @@
 <template>
   <div class="player">
     <div class="info-scope" @click="show=!show">
-      <img :src="imgUrl(songInfo)" alt :class="{active:isPlay}" class="rotate" />
+      <img :src="imgUrl(songInfo)" alt :class="{active:isPlay}" class="rotate"/>
       <div class="songInfo" v-if="songInfo!=''">
         <h5 class="s-name">{{songName(songInfo)}}</h5>
         <span class="author">{{songAuthor(songInfo)}}</span>
@@ -89,7 +89,7 @@ export default {
       isPlay: false,
       show: false,
       showPlayList: false,
-      defalutPic: "../../assets/defaultImg.png",
+      defalutPic: require("../../assets/defaultImg.png"),
       currentSongInfo: this.songInfo
     };
   },
@@ -101,7 +101,7 @@ export default {
       } else if (songInfo.al) {
         return songInfo.al.picUrl;
       } else if (songInfo.artists) {
-        return songInfo.artists[0].img1v1Url;
+        return songInfo.album.artist.img1v1Url;
       }
       // return this.songInfo.picUrl || this.songInfo.al.picUrl || this.defalutPic;
     },
@@ -119,19 +119,13 @@ export default {
     },
     songAuthor: function(songInfo) {
       if (songInfo.song) {
-        return songInfo.song.artists[0].name;
+        return songInfo.song.artists.map((artist)=>artist.name).join('/');
       } else if (songInfo.ar) {
-        return songInfo.ar[0].name;
+        return songInfo.ar.map((artist)=>artist.name).join('/');
       } else if (songInfo.artists) {
-        return songInfo.artists[0].name;
+        return songInfo.artists.map((artist)=>artist.name).join('/');
       }
-      // return this.songInfo.song || this.songInfo.ar
-      //   ? this.songInfo.song.artists[0].name || this.songInfo.ar[0].name
-      //   : this.songInfo.artists[0].name;
     },
-    // orderPlay() {},
-    // randomPlay() {},
-    // ReplaySong() {},
     changePlayStatus() {
       this.isPlay = !this.isPlay;
       console.log(this.$el.querySelector("audio"));

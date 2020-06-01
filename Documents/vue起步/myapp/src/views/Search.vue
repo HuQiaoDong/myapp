@@ -77,6 +77,9 @@ export default {
       hotSearch: "",
       searchSongsData: "",
 
+      // 是否正在搜索
+      searching:false,
+
       playing: {
         fa: true,
         "fa-volume-up": true
@@ -90,6 +93,24 @@ export default {
   },
   props: ["currentSongInfo"],
   methods: {
+    getAlbumCover(id){
+      this.axios
+        .get("/album", {
+          params: {
+            // code: "utf-8",
+            id: id,
+          }
+        })
+        .then(response => {
+          this.$parent.currentSongInfo.album.artist.img1v1Url = response.data.songs[0].al.picUrl
+          // return response.data.songs[0].al.picUrl
+          console.log(this.$parent.currentSongInfo.album.artist.img1v1Url);
+          
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
     getArticleInfo(songItem) {
       return (
         songItem.artists.map(artist => artist.name).join("/") +
@@ -98,6 +119,8 @@ export default {
       );
     },
     play(item) {
+      console.log("playitem ==> ", item);
+      this.getAlbumCover(item.album.id);
       console.log(this.$parent.newSongsData);
       this.$parent.newSongsData.push(item);
       console.log(this.$parent.newSongsData);
@@ -114,6 +137,7 @@ export default {
           }
         })
         .then(response => {
+          this.searching = false;
           console.log(response);
           this.suggestions = response.data.result.allMatch;
           // this.suggests = response.data.result;
@@ -183,6 +207,7 @@ export default {
   },
   watch: {
     keywords: function(value) {
+      this.searching = true;
       this.translateMsg(value);
     }
   }
